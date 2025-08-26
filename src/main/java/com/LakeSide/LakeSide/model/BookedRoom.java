@@ -12,7 +12,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
-@Entity
 @Data
 public class BookedRoom {
     @Id
@@ -79,5 +78,78 @@ public class BookedRoom {
         calculateTotalGuest();
     }
 
+	public Long getBookingId() {
+		return bookingId;
+	}
+
+	public void setBookingId(Long bookingId) {
+		this.bookingId = bookingId;
+	}
+
+	public LocalDate getCheckInDate() {
+		return checkInDate;
+	}
+
+	public void setCheckInDate(LocalDate checkInDate) {
+		this.checkInDate = checkInDate;
+	}
+
+	public LocalDate getCheckOutDate() {
+		return checkOutDate;
+	}
+
+	public void setCheckOutDate(LocalDate checkOutDate) {
+		this.checkOutDate = checkOutDate;
+	}
+
+	public String getGuestFullName() {
+		return guestFullName;
+	}
+
+	public void setGuestFullName(String guestFullName) {
+		this.guestFullName = guestFullName;
+	}
+
+	public String getGuestEmail() {
+		return guestEmail;
+	}
+
+	public void setGuestEmail(String guestEmail) {
+		this.guestEmail = guestEmail;
+	}
+
+	public int getTotalGuests() {
+		return totalGuests;
+	}
+
+	public void setTotalGuests(int totalGuests) {
+		this.totalGuests = totalGuests;
+	}
+
+	public String getBookingConfCode() {
+		return bookingConfCode;
+	}
+
+	public void setBookingConfCode(String bookingConfCode) {
+		this.bookingConfCode = bookingConfCode;
+	}
+
+	public Room getRoom() {
+		return room;
+	}
+
+	public void setRoom(Room room) {
+		this.room = room;
+	}
+
+	public int getNumOfAdults() {
+		return NumOfAdults;
+	}
+
+	public int getNumOfChildren() {
+		return NumOfChildren;
+	}
+
+    
     
 }

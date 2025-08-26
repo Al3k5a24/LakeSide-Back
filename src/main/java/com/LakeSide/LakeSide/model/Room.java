@@ -19,7 +19,6 @@ import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 //Room model
-@Entity
 @Data
 public class Room {
 
@@ -68,6 +67,54 @@ public class Room {
         return "Room [id=" + id + ", roomType=" + roomType + ", roomPrice=" + roomPrice + ", isBooked=" + isBooked
                 + ", bookings=" + bookings + "]";
     }
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getRoomType() {
+		return roomType;
+	}
+
+	public void setRoomType(String roomType) {
+		this.roomType = roomType;
+	}
+
+	public BigDecimal getRoomPrice() {
+		return roomPrice;
+	}
+
+	public void setRoomPrice(BigDecimal roomPrice) {
+		this.roomPrice = roomPrice;
+	}
+
+	public boolean isBooked() {
+		return isBooked;
+	}
+
+	public void setBooked(boolean isBooked) {
+		this.isBooked = isBooked;
+	}
+
+	public Blob getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(Blob photo) {
+		this.photo = photo;
+	}
+
+	public List<BookedRoom> getBookings() {
+		return bookings;
+	}
+
+	public void setBookings(List<BookedRoom> bookings) {
+		this.bookings = bookings;
+	}
 
     
 }
