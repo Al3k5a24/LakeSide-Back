@@ -9,6 +9,7 @@ import java.util.Random;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,17 +20,24 @@ import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 //Room model
-@Data
+@Entity
 public class Room {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
+    
+    @Column
     private String roomType;
+    
+    @Column
     private BigDecimal roomPrice;
+    
+    @Column
     private boolean isBooked=false;
 
     @Lob
+    @Column(length=1000)
     private Blob photo;
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
