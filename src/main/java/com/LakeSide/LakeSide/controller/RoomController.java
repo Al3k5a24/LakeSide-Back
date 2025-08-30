@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import javax.sql.rowset.serial.SerialException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,13 +21,22 @@ import com.LakeSide.LakeSide.service.IRoomService;
 @RestController
 public class RoomController {
 	
+	@Autowired
 	private IRoomService roomService;
     
 	//method that will return response entity of roomresponse
 	//roomresponse is dto class 
 	
+	public IRoomService getRoomService() {
+		return roomService;
+	}
+
+	public void setRoomService(IRoomService roomService) {
+		this.roomService = roomService;
+	}
+
 	@PostMapping("/add/new-room")
-	public ResponseEntity<String> addNewRoom(
+	public ResponseEntity<roomResponse> addNewRoom(
 			@RequestParam("photo") MultipartFile photo,
 			@RequestParam("roomType") String roomType,
 			@RequestParam("roomPrice") BigDecimal roomPrice) throws SerialException, SQLException{
@@ -37,10 +47,7 @@ public class RoomController {
 				savedRoom.getRoomType(), 
 				savedRoom.getRoomPrice());
 		
-		if (photo.isEmpty()) {
-	      return ResponseEntity.badRequest().body("Fajl je prazan");
-	    }else
-	    	return ResponseEntity.ok("Fajl primljen: " + photo.getOriginalFilename());
+		return ResponseEntity.ok(response);
 		
 	}
 	
