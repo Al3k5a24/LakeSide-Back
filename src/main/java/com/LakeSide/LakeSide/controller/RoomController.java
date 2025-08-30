@@ -2,11 +2,13 @@ package com.LakeSide.LakeSide.controller;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.rowset.serial.SerialException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +23,7 @@ import com.LakeSide.LakeSide.service.IRoomService;
 @RestController
 public class RoomController {
 	
+	//DO NOT FORGET TO WIRE
 	@Autowired
 	private IRoomService roomService;
     
@@ -51,8 +54,8 @@ public class RoomController {
 		
 	}
 	
-	@PostMapping("/test-upload")
-    public String testUpload(@RequestParam("photo") MultipartFile file) {
-        return "Primljen fajl: " + file.getOriginalFilename();
-    }
+	@GetMapping("/rooms/room-types")
+	public List<String> getRoomTypes(){
+		return roomService.getAllRoomTypes();
+	}
 }

@@ -16,6 +16,7 @@ import java.sql.SQLException;
 @Service
 public class RoomServiceImpl implements IRoomService{
 	
+	//DO NOT FORGET TO WIRE
 	@Autowired
 	private RoomRepository roomRepository;
 
