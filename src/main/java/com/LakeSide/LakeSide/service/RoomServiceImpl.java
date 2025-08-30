@@ -12,6 +12,7 @@ import com.LakeSide.LakeSide.model.Room;
 import com.LakeSide.LakeSide.repository.RoomRepository;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.List;
 
 @Service
 public class RoomServiceImpl implements IRoomService{
@@ -45,6 +46,12 @@ public class RoomServiceImpl implements IRoomService{
 				e.printStackTrace();}
 	}
 		return roomRepository.save(room);
+	}
+
+	@Override
+	public List<String> getAllRoomTypes() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
     
