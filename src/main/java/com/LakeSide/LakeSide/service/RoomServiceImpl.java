@@ -35,7 +35,7 @@ public class RoomServiceImpl implements IRoomService{
 		room.setRoomPrice(roomPrice);
 		
 		//picture
-		if(!photo.isEmpty()) {
+		if(!photo.isEmpty() && roomPrice!=null) {
 			try {
 				byte[] photoByte;
 				photoByte = photo.getBytes();
