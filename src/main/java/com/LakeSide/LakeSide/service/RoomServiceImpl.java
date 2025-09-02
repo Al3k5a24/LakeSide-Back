@@ -50,8 +50,7 @@ public class RoomServiceImpl implements IRoomService{
 
 	@Override
 	public List<String> getAllRoomTypes() {
-		// TODO Auto-generated method stub
-		return null;
+		return roomRepository.findDistinctRoomTypes();
 	}
 }
     

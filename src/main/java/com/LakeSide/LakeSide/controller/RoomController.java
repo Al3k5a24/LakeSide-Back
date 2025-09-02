@@ -57,7 +57,8 @@ public class RoomController {
 		
 	}
 	
-	@GetMapping("/rooms/room-types")
+	//get all room types from database
+	@GetMapping("/room-types")
 	public List<String> getRoomTypes(){
 		return roomService.getAllRoomTypes();
 	}
