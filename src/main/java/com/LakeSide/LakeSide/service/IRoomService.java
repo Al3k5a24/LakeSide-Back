@@ -16,4 +16,8 @@ public interface IRoomService {
 	Room addNewRoom(MultipartFile photo, String roomType, BigDecimal roomPrice) throws SerialException, SQLException;
 
 	List<String> getAllRoomTypes();
+
+	List<Room> getAllRooms();
+
+	byte[] getRoomPhotoByRoomID(Long roomId) throws SQLException;
 }
