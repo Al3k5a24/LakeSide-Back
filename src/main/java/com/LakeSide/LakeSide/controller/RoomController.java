@@ -74,6 +74,7 @@ public class RoomController {
 	}
 	
 	//fetch all rooms from database
+	@GetMapping("/all-rooms")
 	public ResponseEntity<List<roomResponse>> getAllRooms() throws SQLException{
 		List<Room> rooms=roomService.getAllRooms();
 		List<roomResponse> roomResponse = new ArrayList<roomResponse>();
@@ -94,13 +95,13 @@ public class RoomController {
 	private roomResponse getRoomResponse(Room room) {
 		List<BookedRoom> bookings=getAllBookingsById(room.getId());
 		
-		//get booking history
-		List<bookedRoomResponse> bookingsInfo = bookings.stream().map(booking -> new
-				bookedRoomResponse(
-						booking.getBookingId(),
-						booking.getCheckInDate(),
-						booking.getCheckOutDate(), 
-						booking.getBookingConfCode())).toList();
+//		//get booking history
+//		List<bookedRoomResponse> bookingsInfo = bookings.stream().map(booking -> new
+//				bookedRoomResponse(
+//						booking.getBookingId(),
+//						booking.getCheckInDate(),
+//						booking.getCheckOutDate(), 
+//						booking.getBookingConfCode())).toList();
 		byte[] photoByte=null;
 		Blob photoBlob = room.getPhoto();
 		
@@ -115,7 +116,7 @@ public class RoomController {
 		return new roomResponse(room.getId(),
 				room.getRoomType(),
 				room.getRoomPrice(),
-				room.isBooked(),photoByte,bookingsInfo);
+				room.isBooked(),photoByte);
 	}
 
 	private List<BookedRoom> getAllBookingsById(Long id) {

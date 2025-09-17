@@ -24,15 +24,14 @@ public class roomResponse {
         this.roomPrice = roomPrice;
     }
 
-    public roomResponse(Long id, String roomType, BigDecimal roomPrice, boolean isBooked, byte[] photoByte,
-            List<bookedRoomResponse> bookings) {
+    public roomResponse(Long id, String roomType, BigDecimal roomPrice, boolean isBooked, byte[] photoByte) {
         this.id = id;
         this.roomType = roomType;
         this.roomPrice = roomPrice;
         this.isBooked = isBooked;
         //converting image from string to base64 for easier load, display and transport
         this.photo = photoByte != null ? Base64.encodeBase64String(photoByte) : null;
-        this.bookings = bookings;
+//        this.bookings = bookings;
     }
 
 	public Long getId() {
