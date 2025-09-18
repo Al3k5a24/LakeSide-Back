@@ -13,6 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.LakeSide.LakeSide.Exception.ResourceNotFoundException;
 import com.LakeSide.LakeSide.model.Room;
 import com.LakeSide.LakeSide.repository.RoomRepository;
+
+import jakarta.transaction.Transactional;
+
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
@@ -63,6 +66,7 @@ public class RoomServiceImpl implements IRoomService{
 	}
 
 	@Override
+	@Transactional
 	public byte[] getRoomPhotoByRoomID(Long roomId) throws SQLException {
 		//if room exists,return 
 		Optional<Room> theRoom=roomRepository.findById(roomId);

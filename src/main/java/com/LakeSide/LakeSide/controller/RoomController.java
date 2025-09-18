@@ -27,6 +27,8 @@ import com.LakeSide.LakeSide.response.roomResponse;
 import com.LakeSide.LakeSide.service.BookingService;
 import com.LakeSide.LakeSide.service.IRoomService;
 
+import jakarta.transaction.Transactional;
+
 @RequestMapping("/rooms")
 //CORS policy override for diffrent paths 
 @CrossOrigin
@@ -75,6 +77,7 @@ public class RoomController {
 	
 	//fetch all rooms from database
 	@GetMapping("/all-rooms")
+	@Transactional
 	public ResponseEntity<List<roomResponse>> getAllRooms() throws SQLException{
 		List<Room> rooms=roomService.getAllRooms();
 		List<roomResponse> roomResponse = new ArrayList<roomResponse>();
@@ -86,7 +89,7 @@ public class RoomController {
 				String base64Photo=Base64.encodeBase64String(photoBytes);
 				roomResponse rr=getRoomResponse(room);
 				rr.setPhoto(base64Photo);
-				roomResponse.add((com.LakeSide.LakeSide.response.roomResponse) roomResponse);
+				roomResponse.add(rr);
 			}
 		}
 		return ResponseEntity.ok(roomResponse);
