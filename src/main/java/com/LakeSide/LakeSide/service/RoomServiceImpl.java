@@ -10,6 +10,7 @@ import org.springframework.boot.context.config.ConfigDataResourceNotFoundExcepti
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.LakeSide.LakeSide.Exception.InternalServerExeption;
 import com.LakeSide.LakeSide.Exception.ResourceNotFoundException;
 import com.LakeSide.LakeSide.model.Room;
 import com.LakeSide.LakeSide.repository.RoomRepository;
@@ -66,7 +67,7 @@ public class RoomServiceImpl implements IRoomService{
 	}
 
 	@Override
-	@Transactional
+	@Transactional //for LOBs (pictures)
 	public byte[] getRoomPhotoByRoomID(Long roomId) throws SQLException {
 		//if room exists,return 
 		Optional<Room> theRoom=roomRepository.findById(roomId);
@@ -88,5 +89,26 @@ public class RoomServiceImpl implements IRoomService{
 			roomRepository.deleteById(roomId);
 		}	
 		}
+
+	@Override
+	@Transactional //for LOBs (pictures)
+	public Room updateRoom(Long roomId, String roomType, BigDecimal roomPrice, byte[] photoByte) {
+		Room room = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Room not found!"));
+		if(roomType!=null) room.setRoomType(roomType);
+		if(roomPrice!=null) room.setRoomPrice(roomPrice);
+		if(photoByte!=null && photoByte.length>0) {
+			try {
+				room.setPhoto(new SerialBlob(photoByte));
+			} catch (SQLException ex) {
+				throw new InternalServerExeption("Error updating room");
+			}
+		}
+		return roomRepository.save(room);
+	}
+
+	@Override
+	public Optional<Room> getRoomID(Long roomId) {
+		return Optional.of(roomRepository.findById(roomId).get());
+	}
 }
     

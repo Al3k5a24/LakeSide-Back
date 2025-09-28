@@ -1,11 +1,14 @@
 package com.LakeSide.LakeSide.controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -17,12 +20,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.LakeSide.LakeSide.Exception.PhotoRetrievalException;
+import com.LakeSide.LakeSide.Exception.ResourceNotFoundException;
 import com.LakeSide.LakeSide.model.BookedRoom;
 import com.LakeSide.LakeSide.model.Room;
 import com.LakeSide.LakeSide.response.bookedRoomResponse;
@@ -105,6 +110,7 @@ public class RoomController {
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
+	@Transactional
 	private roomResponse getRoomResponse(Room room) {
 		List<BookedRoom> bookings=getAllBookingsById(room.getId());
 		
@@ -134,5 +140,36 @@ public class RoomController {
 
 	private List<BookedRoom> getAllBookingsById(Long id) {
 		return bookingService.getAllBookingsByRoomId(id);
+	}
+	
+	//function that will update room in Edit room view
+	@PutMapping("/update/room/{roomId}")
+	public ResponseEntity<roomResponse> updateRoom(@PathVariable Long roomId,
+			@RequestParam(required=false) String roomType,
+			@RequestParam(required=false) BigDecimal roomPrice,
+			@RequestParam(required=false) MultipartFile photo) throws IOException, SQLException{
+		
+		//check if photo has picture
+		byte[] photoByte=photo != null && !photo.isEmpty() ? 
+				photo.getBytes() : roomService.getRoomPhotoByRoomID(roomId);
+		
+		//we are converting bytes to Blob  
+		Blob photoBlob = photoByte != null && photoByte.length>0 ? new SerialBlob(photoByte) : null;
+		Room theRoom = roomService.updateRoom(roomId,roomType,roomPrice,photoByte);
+		theRoom.setPhoto(photoBlob);
+		
+		roomResponse RoomResponse=getRoomResponse(theRoom);
+		return ResponseEntity.ok(RoomResponse);
+	}
+	
+	//function to get single room by ID to update
+	@GetMapping("/room/{roomId}")
+	@Transactional
+	public ResponseEntity<Optional<roomResponse>> getRoomByID(@PathVariable Long roomId){
+		Optional<Room> theRoom=roomService.getRoomID(roomId);
+		return theRoom.map(room ->{
+			roomResponse roomResponse = getRoomResponse(room);
+			return ResponseEntity.ok(Optional.of(roomResponse));
+			}).orElseThrow(() -> new ResourceNotFoundException("Room not found"));
 	}
 }

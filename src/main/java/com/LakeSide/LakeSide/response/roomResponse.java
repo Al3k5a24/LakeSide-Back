@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 
+import jakarta.transaction.Transactional;
 import lombok.Data;
 
 //Response DTOs
