@@ -14,6 +14,7 @@ import javax.sql.rowset.serial.SerialException;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -143,11 +145,11 @@ public class RoomController {
 	}
 	
 	//function that will update room in Edit room view
-	@PutMapping("/update/room/{roomId}")
+	@PutMapping(value="/update/room/{roomId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<roomResponse> updateRoom(@PathVariable Long roomId,
 			@RequestParam(required=false) String roomType,
 			@RequestParam(required=false) BigDecimal roomPrice,
-			@RequestParam(required=false) MultipartFile photo) throws IOException, SQLException{
+		@RequestParam(required=false) MultipartFile photo) throws IOException, SQLException{
 		
 		//check if photo has picture
 		byte[] photoByte=photo != null && !photo.isEmpty() ? 
