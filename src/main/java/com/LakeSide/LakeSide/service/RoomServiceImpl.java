@@ -8,6 +8,7 @@ import javax.sql.rowset.serial.SerialException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.LakeSide.LakeSide.Exception.InternalServerExeption;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@CrossOrigin(origins="*")
 public class RoomServiceImpl implements IRoomService{
 	
 	//DO NOT FORGET TO WIRE

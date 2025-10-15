@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,7 +31,6 @@ import com.LakeSide.LakeSide.Exception.PhotoRetrievalException;
 import com.LakeSide.LakeSide.Exception.ResourceNotFoundException;
 import com.LakeSide.LakeSide.model.BookedRoom;
 import com.LakeSide.LakeSide.model.Room;
-import com.LakeSide.LakeSide.response.bookedRoomResponse;
 import com.LakeSide.LakeSide.response.roomResponse;
 import com.LakeSide.LakeSide.service.BookingService;
 import com.LakeSide.LakeSide.service.IRoomService;
@@ -41,7 +39,7 @@ import jakarta.transaction.Transactional;
 
 @RequestMapping("/rooms")
 //CORS policy override for diffrent paths 
-@CrossOrigin
+@CrossOrigin(origins="*")
 @RestController
 public class RoomController {
 	
@@ -145,7 +143,7 @@ public class RoomController {
 	}
 	
 	//function that will update room in Edit room view
-	@PutMapping(value="/update/room/{roomId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PutMapping(value="/update/room/{roomId}")
 	public ResponseEntity<roomResponse> updateRoom(@PathVariable Long roomId,
 			@RequestParam(required=false) String roomType,
 			@RequestParam(required=false) BigDecimal roomPrice,
