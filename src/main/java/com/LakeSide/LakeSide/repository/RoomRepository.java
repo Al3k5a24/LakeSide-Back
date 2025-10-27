@@ -15,6 +15,7 @@ public interface RoomRepository extends JpaRepository<Room, Long>{
 	public <S extends Room> S save(S entity);
 
 	//return diffrent room types
+	//baeldung
 	@Query("SELECT DISTINCT roomType FROM Room")
 	public List<String> findDistinctRoomTypes();
 }

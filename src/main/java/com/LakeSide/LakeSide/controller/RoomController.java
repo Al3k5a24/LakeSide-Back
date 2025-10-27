@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +15,6 @@ import javax.sql.rowset.serial.SerialException;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,8 +31,9 @@ import com.LakeSide.LakeSide.Exception.PhotoRetrievalException;
 import com.LakeSide.LakeSide.Exception.ResourceNotFoundException;
 import com.LakeSide.LakeSide.model.BookedRoom;
 import com.LakeSide.LakeSide.model.Room;
+import com.LakeSide.LakeSide.response.bookedRoomResponse;
 import com.LakeSide.LakeSide.response.roomResponse;
-import com.LakeSide.LakeSide.service.BookingService;
+import com.LakeSide.LakeSide.service.IBookedRoomService;
 import com.LakeSide.LakeSide.service.IRoomService;
 
 import jakarta.transaction.Transactional;
@@ -47,9 +48,6 @@ public class RoomController {
 	@Autowired
 	private IRoomService roomService;
 	
-	@Autowired
-	private BookingService bookingService;
-    
 	//method that will return response entity of roomresponse
 	//roomresponse is dto class 
 	
@@ -60,6 +58,7 @@ public class RoomController {
 	public void setRoomService(IRoomService roomService) {
 		this.roomService = roomService;
 	}
+	
 
 	@PostMapping("/add/new-room")
 	public ResponseEntity<roomResponse> addNewRoom(
@@ -112,8 +111,7 @@ public class RoomController {
 
 	@Transactional
 	private roomResponse getRoomResponse(Room room) {
-		List<BookedRoom> bookings=getAllBookingsById(room.getId());
-		
+//		List<BookedRoom> bookings=getAllBookingsById(room.getId());
 //		//get booking history
 //		List<bookedRoomResponse> bookingsInfo = bookings.stream().map(booking -> new
 //				bookedRoomResponse(
@@ -138,9 +136,9 @@ public class RoomController {
 				room.isBooked(),photoByte);
 	}
 
-	private List<BookedRoom> getAllBookingsById(Long id) {
-		return bookingService.getAllBookingsByRoomId(id);
-	}
+//	private List<BookedRoom> getAllBookingsById(Long id) {
+//		return broomService.getAllBookingsByRoomId(id);
+//	}
 	
 	//function that will update room in Edit room view
 	@PutMapping(value="/update/room/{roomId}")
@@ -172,4 +170,49 @@ public class RoomController {
 			return ResponseEntity.ok(Optional.of(roomResponse));
 			}).orElseThrow(() -> new ResourceNotFoundException("Room not found"));
 	}
+	
+
+	// DO NOT FORGET TO WIRE
+	@Autowired
+	private IBookedRoomService broomService;
+
+	// method that will return response entity of roomresponse
+	// roomresponse is dto class
+	public IBookedRoomService getBroomService() {
+		return broomService;
+	}
+
+	public void setBroomService(IBookedRoomService broomService) {
+		this.broomService = broomService;
+	}
+
+	@Transactional
+	private bookedRoomResponse getBookedRoomResponse(BookedRoom broom) {
+		//LocalDate checkInDate, LocalDate checkOutDate, String guestFullName,
+        //String guestEmail, int numOfAdults, int numOfChildren,roomResponse room
+		return new bookedRoomResponse(broom.getCheckInDate(),
+				broom.getCheckOutDate(),
+				broom.getGuestFullName(),
+				broom.getGuestEmail(),
+				broom.getNumOfAdults(),
+				broom.getNumOfChildren(),
+				getRoomResponse(broom.getRoom()));
+	}
+	
+	@PostMapping(value="/browse-rooms/booking/{roomId}")
+	public ResponseEntity<bookedRoomResponse> roomBooking(
+			@PathVariable Long roomId,
+			@RequestParam String fullname,
+			@RequestParam String email,
+			@RequestParam LocalDate checkInDate,
+			@RequestParam LocalDate checkOutDate,
+			@RequestParam int numOfAdults,
+			@RequestParam int numofChildren){
+		Room room=roomService.getRoomInfoById(roomId);
+		BookedRoom broom=broomService.bookRoom(checkInDate, checkOutDate, fullname, email, numOfAdults, numofChildren, room);
+		bookedRoomResponse broomResponse=getBookedRoomResponse(broom);
+	return ResponseEntity.ok(broomResponse);
+		
+	}
+
 }

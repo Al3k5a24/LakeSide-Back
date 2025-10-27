@@ -20,6 +20,7 @@ import jakarta.transaction.Transactional;
 
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,5 +113,13 @@ public class RoomServiceImpl implements IRoomService{
 	public Optional<Room> getRoomID(Long roomId) {
 		return Optional.of(roomRepository.findById(roomId).get());
 	}
-}
+
+	@Override
+	public Room getRoomInfoById(Long roomId) {
+		List<Room> rooms=getAllRooms();
+		//https://www.kindsonthegenius.com get item by id
+		Room room=rooms.stream().filter(t->roomId.equals(t.getId())).findFirst().orElse(null);
+		return room;
+	}
+} 
     

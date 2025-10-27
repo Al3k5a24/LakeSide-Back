@@ -27,4 +27,6 @@ public interface IRoomService {
 	Room updateRoom(Long roomId, String roomType, BigDecimal roomPrice, byte[] photoByte);
 
 	Optional<Room> getRoomID(Long roomId);
+	
+	Room getRoomInfoById(Long roomId);
 }

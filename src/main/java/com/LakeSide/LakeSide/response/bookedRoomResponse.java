@@ -47,6 +47,17 @@ public class bookedRoomResponse {
         this.bookingConfCode = bookingConfCode;
         this.room = room;
     }
+    
+    public bookedRoomResponse(LocalDate checkInDate, LocalDate checkOutDate, String guestFullName,
+            String guestEmail, int numOfAdults, int numOfChildren,roomResponse room) {
+        this.checkInDate = checkInDate;
+        this.checkOutDate = checkOutDate;
+        this.guestFullName = guestFullName;
+        this.guestEmail = guestEmail;
+        NumOfAdults = numOfAdults;
+        NumOfChildren = numOfChildren;
+        this.room = room;
+    }
 
 	public Long getBookingId() {
 		return bookingId;

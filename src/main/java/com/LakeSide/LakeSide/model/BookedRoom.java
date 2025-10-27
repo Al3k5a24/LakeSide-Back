@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.Data;
 
 @Entity
 public class BookedRoom {
@@ -60,8 +59,16 @@ public class BookedRoom {
         this.bookingConfCode = bookingConfCode;
         this.room = room;
     }
+    
+    
 
-    //function that will calculate total number of guest and store value in field totalGuests
+	public BookedRoom() {
+		super();
+	}
+
+
+
+	//function that will calculate total number of guest and store value in field totalGuests
     public void calculateTotalGuest(){
         this.totalGuests=NumOfAdults+NumOfChildren;
     }
