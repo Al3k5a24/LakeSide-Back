@@ -9,7 +9,7 @@ import com.LakeSide.LakeSide.model.Room;
 public interface IBookedRoomService {
 	
 	BookedRoom bookRoom(LocalDate checkInDate, LocalDate checkOutDate, String guestFullName,
-            String guestEmail, int numOfAdults, int numOfChildren, Room room);
+            String guestEmail, int numOfAdults, int numOfChildren, int totalNumberOfGuests, Room room);
 	
 	public List<BookedRoom> getAllBookingsByRoomId(Long id);
 	

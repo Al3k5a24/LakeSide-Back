@@ -196,20 +196,24 @@ public class RoomController {
 				broom.getGuestEmail(),
 				broom.getNumOfAdults(),
 				broom.getNumOfChildren(),
+				broom.calculateTotalGuest(),
 				getRoomResponse(broom.getRoom()));
 	}
 	
 	@PostMapping(value="/browse-rooms/booking/{roomId}")
+	@Transactional
 	public ResponseEntity<bookedRoomResponse> roomBooking(
 			@PathVariable Long roomId,
-			@RequestParam String fullname,
-			@RequestParam String email,
+			@RequestParam String guestFullName,
+			@RequestParam String guestEmail,
 			@RequestParam LocalDate checkInDate,
 			@RequestParam LocalDate checkOutDate,
 			@RequestParam int numOfAdults,
-			@RequestParam int numofChildren){
+			@RequestParam int numOfChildren) throws IOException, SQLException{
 		Room room=roomService.getRoomInfoById(roomId);
-		BookedRoom broom=broomService.bookRoom(checkInDate, checkOutDate, fullname, email, numOfAdults, numofChildren, room);
+		int totalNumberOfGuests=numOfAdults+numOfChildren;
+		BookedRoom broom=broomService.bookRoom(checkInDate, checkOutDate, guestFullName,
+				guestEmail, numOfAdults, numOfChildren,totalNumberOfGuests, room);
 		bookedRoomResponse broomResponse=getBookedRoomResponse(broom);
 	return ResponseEntity.ok(broomResponse);
 		

@@ -34,7 +34,7 @@ public class bookedRoomResponse {
     }
 
     public bookedRoomResponse(Long bookingId, LocalDate checkInDate, LocalDate checkOutDate, String guestFullName,
-            String guestEmail, int numOfAdults, int numOfChildren, int totalGuests, String bookingConfCode,
+            String guestEmail, int numOfAdults, int numOfChildren, int totalGuests,
             roomResponse room) {
         this.bookingId = bookingId;
         this.checkInDate = checkInDate;
@@ -44,12 +44,11 @@ public class bookedRoomResponse {
         NumOfAdults = numOfAdults;
         NumOfChildren = numOfChildren;
         this.totalGuests = totalGuests;
-        this.bookingConfCode = bookingConfCode;
         this.room = room;
     }
     
     public bookedRoomResponse(LocalDate checkInDate, LocalDate checkOutDate, String guestFullName,
-            String guestEmail, int numOfAdults, int numOfChildren,roomResponse room) {
+            String guestEmail, int numOfAdults, int numOfChildren,int to, roomResponse room) {
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.guestFullName = guestFullName;

@@ -66,11 +66,10 @@ public class BookedRoom {
 		super();
 	}
 
-
-
 	//function that will calculate total number of guest and store value in field totalGuests
-    public void calculateTotalGuest(){
+    public int calculateTotalGuest(){
         this.totalGuests=NumOfAdults+NumOfChildren;
+        return this.totalGuests;
     }
 
     public void setNumOfAdults(int numOfAdults) {
