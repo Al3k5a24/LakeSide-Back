@@ -1,13 +1,18 @@
 package com.LakeSide.LakeSide.service;
 
 import java.beans.Transient;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+
+import javax.sql.rowset.serial.SerialBlob;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import com.LakeSide.LakeSide.Exception.PhotoRetrievalException;
 import com.LakeSide.LakeSide.model.BookedRoom;
 import com.LakeSide.LakeSide.model.Room;
 import com.LakeSide.LakeSide.repository.BookedRoomRepository;
@@ -37,6 +42,18 @@ public class BookedRoomServiceImpl implements IBookedRoomService{
 		BRoom.setNumOfAdults(numOfAdults);
 		BRoom.setNumOfChildren(numOfChildren);
 		BRoom.calculateTotalGuest();
+		byte[] photoByte=null;
+		Blob photoBlob = room.getPhoto();
+		
+		//convert photo so we can display it
+		if(photoBlob != null) {
+			try {
+				photoByte=photoBlob.getBytes(1, (int)photoBlob.length());
+				room.setPhoto(new SerialBlob(photoByte));
+			} catch (SQLException e) {
+				throw new PhotoRetrievalException("Error retrieving photo");
+			}
+		}
 		BRoom.setRoom(room);
 		
 		broomrepository.save(BRoom);
