@@ -29,4 +29,5 @@ public interface IRoomService {
 	Optional<Room> getRoomID(Long roomId);
 	
 	Room getRoomInfoById(Long roomId);
+	
 }

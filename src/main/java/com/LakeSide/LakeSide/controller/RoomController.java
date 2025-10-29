@@ -5,9 +5,12 @@ import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
@@ -91,12 +94,14 @@ public class RoomController {
 		
 		//for every room we will get it from database and post it on frontend
 		for(Room room:rooms) {
+			if(!room.isBooked()) {
 			byte[] photoBytes=roomService.getRoomPhotoByRoomID(room.getId());
 			if(photoBytes!=null && photoBytes.length>0) {
 				String base64Photo=Base64.encodeBase64String(photoBytes);
 				roomResponse rr=getRoomResponse(room);
 				rr.setPhoto(base64Photo);
 				roomResponse.add(rr);
+			}
 			}
 		}
 		return ResponseEntity.ok(roomResponse);
@@ -160,6 +165,16 @@ public class RoomController {
 		return ResponseEntity.ok(RoomResponse);
 	}
 	
+	//function that will generate random conf code for booking
+	private String generateConfirmationCode(Room room) {
+		//combine timestamp+ID+random
+		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+        String roomCode = String.format("%03d", room.getId());
+        String random = String.format("%04d", ThreadLocalRandom.current().nextInt(1000, 9999));
+        
+        return "BK"+timestamp+roomCode+random;
+	}
+	
 	//function to get single room by ID to update
 	@GetMapping("/room/{roomId}")
 	@Transactional
@@ -186,6 +201,7 @@ public class RoomController {
 		this.broomService = broomService;
 	}
 
+	//dto function for booking a room
 	@Transactional
 	private bookedRoomResponse getBookedRoomResponse(BookedRoom broom) {
 		//LocalDate checkInDate, LocalDate checkOutDate, String guestFullName,
@@ -200,6 +216,7 @@ public class RoomController {
 				getRoomResponse(broom.getRoom()));
 	}
 	
+	//book a single room
 	@PostMapping(value="/browse-rooms/booking/{roomId}")
 	@Transactional
 	public ResponseEntity<bookedRoomResponse> roomBooking(
@@ -212,11 +229,20 @@ public class RoomController {
 			@RequestParam int numOfChildren) throws IOException, SQLException{
 		Room room=roomService.getRoomInfoById(roomId);
 		int totalNumberOfGuests=numOfAdults+numOfChildren;
+		
+		//function for confCode
+		String bookingCode=generateConfirmationCode(room);
 		BookedRoom broom=broomService.bookRoom(checkInDate, checkOutDate, guestFullName,
-				guestEmail, numOfAdults, numOfChildren,totalNumberOfGuests, room);
+				guestEmail, numOfAdults,bookingCode, numOfChildren,totalNumberOfGuests, room);
+		//in case of removed booking, room should be listed as available	
+		if(broom.getRoom().getId()!=null) {
+			room.setBooked(true);
+		}else {
+			room.setBooked(false);
+		}
+		
 		bookedRoomResponse broomResponse=getBookedRoomResponse(broom);
 	return ResponseEntity.ok(broomResponse);
-		
 	}
 
 }
