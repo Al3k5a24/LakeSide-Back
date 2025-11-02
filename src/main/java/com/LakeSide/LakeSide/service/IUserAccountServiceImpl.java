@@ -1,6 +1,7 @@
 package com.LakeSide.LakeSide.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +22,8 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		this.userRepository = userRepository;
 	}
 	
-	private final PasswordEncoder passwordEncoder;
-
-    public IUserAccountServiceImpl(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
+	private BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+	
 	
 	@Override
 	public UserAccount createAccount(String fullName, String email, String Password) {
@@ -33,10 +31,10 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		if(fullName!=null) user.setFullName(fullName);
 		if(email!=null) user.setEmail(email);
 		if(Password!=null) {
-			String encodedPassword = passwordEncoder.encode(Password);
-			user.setPassword(encodedPassword);
+			String encryptedPassword=passwordEncoder.encode(Password);
+			user.setPassword(encryptedPassword);
 		}
-		
+		user.setIsActive(false);
 		userRepository.save(user);
 		return user;
 	}
