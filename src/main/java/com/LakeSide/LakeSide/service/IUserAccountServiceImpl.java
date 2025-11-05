@@ -1,10 +1,14 @@
 package com.LakeSide.LakeSide.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.LakeSide.LakeSide.Exception.InvalidPasswordException;
+import com.LakeSide.LakeSide.Exception.UserAccountNotFoundException;
 import com.LakeSide.LakeSide.model.UserAccount;
 import com.LakeSide.LakeSide.repository.UserAccountRepository;
 
@@ -39,4 +43,23 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		return user;
 	}
 
+	@Override
+	public UserAccount SignInExistingAccount(String email, String password) {
+		if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be empty");
+        }
+        
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+        
+        UserAccount potentialUser = userRepository.findUserByEmail(email.trim())
+                .orElseThrow(() -> new UserAccountNotFoundException(
+                    "User with email " + email + " not found"));
+        if (!passwordEncoder.matches(password, potentialUser.getPassword())) {
+            throw new InvalidPasswordException("Password is incorrect,try again");
+        }
+		
+        return potentialUser;
+	}
 }
