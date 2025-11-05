@@ -39,7 +39,7 @@ public class UserAccountController {
 				user.getFullName(),
 				user.getEmail(),
 				user.getPassword(),
-				user.getIsActive());
+				user.getIsLoggedIn());
 	}
 	
 	//for login
@@ -47,7 +47,7 @@ public class UserAccountController {
 		return new userAccountLogInResponse(
 				user.getEmail(),
 				user.getPassword(),
-				user.getIsActive());
+				user.getIsLoggedIn());
 	}
 	
 	@PostMapping("/create-account")
@@ -60,11 +60,12 @@ public class UserAccountController {
 		return ResponseEntity.ok(userResponse);
 	}
 	
-	@GetMapping("/sign-in")
+	@PostMapping("/sign-in")
 	private ResponseEntity<userAccountLogInResponse> LogInExistingAccount(
 			@RequestParam String email,
 			@RequestParam String password) {
 		UserAccount user=userService.SignInExistingAccount(email, password);
+		user.setIsLoggedIn(true);
 		userAccountLogInResponse userResponse=getUserLoginResponse(user);
 		return ResponseEntity.ok(userResponse);
 	}

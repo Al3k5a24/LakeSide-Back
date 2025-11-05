@@ -23,14 +23,15 @@ public class UserAccount {
 	private String password;
 	
 	@Column
-	private Boolean isActive;
+	private Boolean isLoggedIn;
 
-	public Boolean getIsActive() {
-		return isActive;
+
+	public Boolean getIsLoggedIn() {
+		return isLoggedIn;
 	}
 
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
+	public void setIsLoggedIn(Boolean isLoggedIn) {
+		this.isLoggedIn = isLoggedIn;
 	}
 
 	public Long getId() {
@@ -71,7 +72,7 @@ public class UserAccount {
 		this.fullName = fullName;
 		this.email = email;
 		this.password = password;
-		this.isActive=isActive;
+		this.isLoggedIn=isActive;
 	}
 	
 	public UserAccount() {

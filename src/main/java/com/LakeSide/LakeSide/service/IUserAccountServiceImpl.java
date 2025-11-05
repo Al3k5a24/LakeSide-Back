@@ -38,7 +38,7 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 			String encryptedPassword=passwordEncoder.encode(Password);
 			user.setPassword(encryptedPassword);
 		}
-		user.setIsActive(false);
+		user.setIsLoggedIn(false);
 		userRepository.save(user);
 		return user;
 	}
@@ -56,10 +56,11 @@ public class IUserAccountServiceImpl implements IUserAccountService{
         UserAccount potentialUser = userRepository.findUserByEmail(email.trim())
                 .orElseThrow(() -> new UserAccountNotFoundException(
                     "User with email " + email + " not found"));
+        potentialUser.setIsLoggedIn(true);
         if (!passwordEncoder.matches(password, potentialUser.getPassword())) {
             throw new InvalidPasswordException("Password is incorrect,try again");
         }
-		
+        userRepository.save(potentialUser);
         return potentialUser;
 	}
 }
