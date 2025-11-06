@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.LakeSide.LakeSide.Exception.InvalidPasswordException;
 import com.LakeSide.LakeSide.Exception.UserAccountNotFoundException;
 import com.LakeSide.LakeSide.model.UserAccount;
+import com.LakeSide.LakeSide.model.UserAccount.Role;
 import com.LakeSide.LakeSide.repository.UserAccountRepository;
 
 @Service
@@ -39,6 +40,7 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 			user.setPassword(encryptedPassword);
 		}
 		user.setIsLoggedIn(false);
+		user.setRole(Role.USER);
 		userRepository.save(user);
 		return user;
 	}

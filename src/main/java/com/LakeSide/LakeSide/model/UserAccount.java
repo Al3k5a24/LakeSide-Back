@@ -2,6 +2,8 @@ package com.LakeSide.LakeSide.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,7 +26,20 @@ public class UserAccount {
 	
 	@Column
 	private Boolean isLoggedIn;
-
+	
+	@Column
+	@Enumerated(EnumType.STRING)
+	private Role role;
+	
+	public UserAccount(Long id, String fullName, String email, String password, Boolean isLoggedIn, Role role) {
+		super();
+		this.id = id;
+		this.fullName = fullName;
+		this.email = email;
+		this.password = password;
+		this.isLoggedIn = isLoggedIn;
+		this.role = role;
+	}
 
 	public Boolean getIsLoggedIn() {
 		return isLoggedIn;
@@ -65,15 +80,6 @@ public class UserAccount {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	public UserAccount(Long id, String fullName, String email, String password,Boolean isActive) {
-		super();
-		this.id = id;
-		this.fullName = fullName;
-		this.email = email;
-		this.password = password;
-		this.isLoggedIn=isActive;
-	}
 	
 	public UserAccount() {
 		super();
@@ -86,4 +92,17 @@ public class UserAccount {
 		this.password = password;
 	}
 	
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	public enum Role{
+		USER,
+		ADMIN,
+		OWNER
+	}
 }
