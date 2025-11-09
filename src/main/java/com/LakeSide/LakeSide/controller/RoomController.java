@@ -36,8 +36,8 @@ import com.LakeSide.LakeSide.model.BookedRoom;
 import com.LakeSide.LakeSide.model.Room;
 import com.LakeSide.LakeSide.response.bookedRoomResponse;
 import com.LakeSide.LakeSide.response.roomResponse;
-import com.LakeSide.LakeSide.service.IBookedRoomService;
-import com.LakeSide.LakeSide.service.IRoomService;
+import com.LakeSide.LakeSide.service.Room.IBookedRoomService;
+import com.LakeSide.LakeSide.service.Room.IRoomService;
 
 import jakarta.transaction.Transactional;
 

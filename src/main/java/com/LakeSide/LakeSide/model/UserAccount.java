@@ -1,5 +1,10 @@
 package com.LakeSide.LakeSide.model;
 
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,9 +12,15 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
-public class UserAccount {
+@Builder //for jwt 
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserAccount implements UserDetails{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,15 +42,7 @@ public class UserAccount {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 	
-	public UserAccount(Long id, String fullName, String email, String password, Boolean isLoggedIn, Role role) {
-		super();
-		this.id = id;
-		this.fullName = fullName;
-		this.email = email;
-		this.password = password;
-		this.isLoggedIn = isLoggedIn;
-		this.role = role;
-	}
+	private String token;
 
 	public Boolean getIsLoggedIn() {
 		return isLoggedIn;
@@ -85,13 +88,6 @@ public class UserAccount {
 		super();
 	}
 	
-	public UserAccount(String fullName, String email, String password) {
-		super();
-		this.fullName = fullName;
-		this.email = email;
-		this.password = password;
-	}
-	
 	public Role getRole() {
 		return role;
 	}
@@ -104,5 +100,24 @@ public class UserAccount {
 		USER,
 		ADMIN,
 		OWNER
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getUsername() {
+		return getEmail();
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 }

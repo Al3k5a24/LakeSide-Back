@@ -39,7 +39,9 @@ public class UserAccountController {
 				user.getFullName(),
 				user.getEmail(),
 				user.getPassword(),
-				user.getIsLoggedIn());
+				user.getIsLoggedIn(),
+				user.getRole().name(),
+				user.getToken());
 	}
 	
 	//for login
@@ -47,7 +49,8 @@ public class UserAccountController {
 		return new userAccountLogInResponse(
 				user.getEmail(),
 				user.getPassword(),
-				user.getIsLoggedIn());
+				user.getIsLoggedIn(),
+				user.getToken());
 	}
 	
 	@PostMapping("/create-account")

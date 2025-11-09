@@ -7,6 +7,8 @@ public class userAccountLogInResponse {
 	private String password;
 	
 	private Boolean isActive=false;
+	
+	private String token;
 
 	public String getEmail() {
 		return email;
@@ -32,15 +34,24 @@ public class userAccountLogInResponse {
 		this.isActive = isActive;
 	}
 
-	public userAccountLogInResponse(String email, String password, Boolean isActive) {
+	public userAccountLogInResponse(String email, String password, Boolean isActive, String token) {
 		super();
 		this.email = email;
 		this.password = password;
 		this.isActive = isActive;
+		this.token = token;
 	}
-	
+
 	public userAccountLogInResponse() {
 		super();
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 	
 	

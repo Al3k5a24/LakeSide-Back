@@ -1,5 +1,6 @@
 package com.LakeSide.LakeSide.response;
 
+
 public class userAccountResponse {
 
 	private Long id;
@@ -12,17 +13,24 @@ public class userAccountResponse {
 	
 	private Boolean isActive=false;
 	
+	private String role;
+	
+	private String token;
+	
 	public userAccountResponse() {
 		super();
 	}
 
-	public userAccountResponse(Long id, String fullName, String email, String password, Boolean isActive) {
+	public userAccountResponse(Long id, String fullName, String email, String password, Boolean isActive, String role,
+			String token) {
 		super();
 		this.id = id;
 		this.fullName = fullName;
 		this.email = email;
 		this.password = password;
 		this.isActive = isActive;
+		this.role = role;
+		this.token = token;
 	}
 
 	public Long getId() {
@@ -64,7 +72,21 @@ public class userAccountResponse {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
-	
-	
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
 	
 }

@@ -3,6 +3,7 @@ package com.LakeSide.LakeSide.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,9 @@ import com.LakeSide.LakeSide.Exception.UserAccountNotFoundException;
 import com.LakeSide.LakeSide.model.UserAccount;
 import com.LakeSide.LakeSide.model.UserAccount.Role;
 import com.LakeSide.LakeSide.repository.UserAccountRepository;
+import com.LakeSide.LakeSide.response.userAccountResponse;
+
+import JWT.JWTService;
 
 @Service
 public class IUserAccountServiceImpl implements IUserAccountService{
@@ -29,9 +33,11 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 	
 	private BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
 	
+	@Autowired
+	private JWTService jwtService;
 	
 	@Override
-	public UserAccount createAccount(String fullName, String email, String Password) {
+	public userAccountResponse createAccount(String fullName, String email, String Password) {
 		UserAccount user=new UserAccount();
 		if(fullName!=null) user.setFullName(fullName);
 		if(email!=null) user.setEmail(email);
@@ -42,7 +48,9 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		user.setIsLoggedIn(false);
 		user.setRole(Role.USER);
 		userRepository.save(user);
-		return user;
+		var jwtToken=jwtService.generateToken(user);
+		var user=User.builder().build()
+		return userAccountResponse;
 	}
 
 	@Override
@@ -64,5 +72,11 @@ public class IUserAccountServiceImpl implements IUserAccountService{
         }
         userRepository.save(potentialUser);
         return potentialUser;
+	}
+
+	@Override
+	public UserAccount loadUserbyEmail(String email) {
+		UserAccount user=userRepository.findUserByEmail(email).orElseThrow(() -> new UserAccountNotFoundException("Account has not been found!"));
+		return user;
 	}
 }

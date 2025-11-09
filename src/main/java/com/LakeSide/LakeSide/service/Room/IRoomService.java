@@ -1,4 +1,4 @@
-package com.LakeSide.LakeSide.service;
+package com.LakeSide.LakeSide.service.Room;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;

@@ -1,4 +1,4 @@
-package com.LakeSide.LakeSide.service;
+package com.LakeSide.LakeSide.service.Room;
 
 import java.beans.Transient;
 import java.sql.Blob;
