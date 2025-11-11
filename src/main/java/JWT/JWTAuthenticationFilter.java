@@ -35,35 +35,44 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
 			@NotNull HttpServletResponse response,
 			@NotNull FilterChain filterChain)
 			throws ServletException, IOException {
-		//JWT token header
-		final String authHeader = request.getHeader("Athorization"); 
-		final String jwt;
-		//data from user request that will be extracted from fields in order to check if user is in our database
-		final String userEmail;
-		
-		//early check JWT token
-		if(authHeader==null || !authHeader.startsWith("Bearer ")) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-		
-		//start from position 7 bcs Bearer with 1 space has 7 positions(letters)
-		//that is not important for us, only what comes next
-		jwt = authHeader.substring(7);
-		userEmail=jwtService.extractEmail(jwt);
-		
-		//check if userEmail is not null and the user has not been authenticated already(not connected)
-		if(userEmail != null && SecurityContextHolder.getContext().getAuthentication()==null) {
-			UserDetails userDetails = this.userService.loadUserbyEmail(userEmail);
-			//check if token is vald
-			if(jwtService.isTokenValid(jwt,userDetails)) {
-				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-						userDetails,null,userDetails.getAuthorities());
-				//use info from request to create token
-				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(authToken);
+		try {
+			//JWT token header - Fixed typo: "Athorization" -> "Authorization"
+			final String authHeader = request.getHeader("Authorization"); 
+			final String jwt;
+			//data from user request that will be extracted from fields in order to check if user is in our database
+			final String userEmail;
+			
+			//early check JWT token
+			if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+				filterChain.doFilter(request, response);
+				return;
 			}
+			
+			//start from position 7 because Bearer with 1 space has 7 positions(letters)
+			//that is not important for us, only what comes next
+			jwt = authHeader.substring(7);
+			userEmail = jwtService.extractEmail(jwt);
+			
+			//check if userEmail is not null and the user has not been authenticated already(not connected)
+			if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+				UserDetails userDetails = this.userService.loadUserbyEmail(userEmail);
+				
+				//check if userDetails exists and token is valid
+				if(userDetails != null && jwtService.isTokenValid(jwt, userDetails)) {
+					UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+							userDetails, null, userDetails.getAuthorities());
+					//use info from request to create token
+					authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					SecurityContextHolder.getContext().setAuthentication(authToken);
+				}
+			}
+		} catch (Exception e) {
+			// Log the exception and continue with the filter chain
+			// Invalid tokens will simply not authenticate the user
+			// In production, you might want to log this for monitoring
+			logger.error("JWT Authentication failed: " + e.getMessage());
 		}
+		
 		//always call!
 		filterChain.doFilter(request, response);
 	}

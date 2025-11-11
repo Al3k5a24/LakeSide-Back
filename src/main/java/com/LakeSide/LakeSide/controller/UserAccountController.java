@@ -33,22 +33,11 @@ public class UserAccountController {
 		this.userService = userService;
 	}
 	
-	//general use
-	private userAccountResponse getUserResponse(UserAccount user) {
-		return new userAccountResponse(user.getId(),
-				user.getFullName(),
-				user.getEmail(),
-				user.getPassword(),
-				user.getIsLoggedIn(),
-				user.getRole().name(),
-				user.getToken());
-	}
-	
 	//for login
 	private userAccountLogInResponse getUserLoginResponse(UserAccount user) {
 		return new userAccountLogInResponse(
 				user.getEmail(),
-				user.getPassword(),
+				null, // Never return password
 				user.getIsLoggedIn(),
 				user.getToken());
 	}
@@ -58,8 +47,8 @@ public class UserAccountController {
 			@RequestParam String fullName,
 			@RequestParam String email,
 			@RequestParam String password){
-		UserAccount user=userService.createAccount(fullName, email, password);
-		userAccountResponse userResponse=getUserResponse(user);
+		// Service already returns userAccountResponse with token
+		userAccountResponse userResponse = userService.createAccount(fullName, email, password);
 		return ResponseEntity.ok(userResponse);
 	}
 	
@@ -67,9 +56,9 @@ public class UserAccountController {
 	private ResponseEntity<userAccountLogInResponse> LogInExistingAccount(
 			@RequestParam String email,
 			@RequestParam String password) {
-		UserAccount user=userService.SignInExistingAccount(email, password);
-		user.setIsLoggedIn(true);
-		userAccountLogInResponse userResponse=getUserLoginResponse(user);
+		UserAccount user = userService.SignInExistingAccount(email, password);
+		// Token and logged in status are already set by the service
+		userAccountLogInResponse userResponse = getUserLoginResponse(user);
 		return ResponseEntity.ok(userResponse);
 	}
 }

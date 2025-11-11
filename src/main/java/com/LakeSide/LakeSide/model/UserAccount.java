@@ -1,8 +1,10 @@
 package com.LakeSide.LakeSide.model;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
@@ -12,6 +14,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -42,7 +45,8 @@ public class UserAccount implements UserDetails{
 	@Enumerated(EnumType.STRING)
 	private Role role;
 	
-	private String token;
+	@Transient
+	private String token; // Token should not be persisted in database
 
 	public Boolean getIsLoggedIn() {
 		return isLoggedIn;
@@ -104,13 +108,36 @@ public class UserAccount implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+		// Convert role to Spring Security authority (ROLE_ prefix is required)
+		if (role == null) {
+			return Collections.emptyList();
+		}
+		return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
 	}
 
 	@Override
 	public String getUsername() {
 		return getEmail();
+	}
+	
+	@Override
+	public boolean isAccountNonExpired() {
+		return true; // Account never expires
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true; // Account is never locked
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true; // Credentials never expire
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return isLoggedIn != null && isLoggedIn; // Account is enabled if logged in
 	}
 
 	public String getToken() {

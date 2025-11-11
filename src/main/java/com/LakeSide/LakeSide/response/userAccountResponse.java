@@ -21,8 +21,7 @@ public class userAccountResponse {
 		super();
 	}
 
-	public userAccountResponse(Long id, String fullName, String email, String password, Boolean isActive, String role,
-			String token) {
+	public userAccountResponse(Long id, String fullName, String email, String password, Boolean isActive, String role) {
 		super();
 		this.id = id;
 		this.fullName = fullName;
@@ -30,7 +29,6 @@ public class userAccountResponse {
 		this.password = password;
 		this.isActive = isActive;
 		this.role = role;
-		this.token = token;
 	}
 
 	public Long getId() {
