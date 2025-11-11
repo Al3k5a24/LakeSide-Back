@@ -2,8 +2,17 @@ package com.LakeSide.LakeSide.controller;
 
 import java.util.Optional;
 
+import org.apache.tomcat.util.http.SameSiteCookies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,11 +25,23 @@ import com.LakeSide.LakeSide.response.userAccountLogInResponse;
 import com.LakeSide.LakeSide.response.userAccountResponse;
 import com.LakeSide.LakeSide.service.IUserAccountService;
 
+import Configuration.AppConfig;
+import JWT.JWTService;
+import io.jsonwebtoken.Jwt;
+import jakarta.servlet.http.HttpServletResponse;
+
 @RequestMapping("/auth")
 //CORS policy override for diffrent paths 
 @CrossOrigin(origins="*")
 @RestController
 public class UserAccountController {
+	
+	//added for http-only cookie(jwt storage)
+	@Autowired
+	private AppConfig properties;
+	
+	@Autowired
+    private JWTService authService;
 
 	@Autowired
 	private IUserAccountService userService;
@@ -31,6 +52,22 @@ public class UserAccountController {
 
 	public void setUserService(IUserAccountService userService) {
 		this.userService = userService;
+	}
+	
+	public AppConfig getProperties() {
+		return properties;
+	}
+
+	public void setProperties(AppConfig properties) {
+		this.properties = properties;
+	}
+
+	public JWTService getAuthService() {
+		return authService;
+	}
+
+	public void setAuthService(JWTService authService) {
+		this.authService = authService;
 	}
 	
 	//for login
@@ -52,13 +89,50 @@ public class UserAccountController {
 		return ResponseEntity.ok(userResponse);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@PostMapping("/sign-in")
-	private ResponseEntity<userAccountLogInResponse> LogInExistingAccount(
+	private ResponseEntity<Object> LogInExistingAccount(
 			@RequestParam String email,
-			@RequestParam String password) {
+			@RequestParam String password,
+			HttpServletResponse response) {
 		UserAccount user = userService.SignInExistingAccount(email, password);
-		// Token and logged in status are already set by the service
-		userAccountLogInResponse userResponse = getUserLoginResponse(user);
-		return ResponseEntity.ok(userResponse);
+		try {
+			// Token and logged in status are already set by the service
+			userAccountLogInResponse userResponse = getUserLoginResponse(user);
+			ResponseCookie cookie = ResponseCookie.from(properties.getCookie().getName(), user.getToken())
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(properties.getCookie().getExpiresIn())
+                    .sameSite(SameSiteCookies.STRICT.toString())
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+			return ResponseEntity.ok(userResponse);
+		} catch (Exception e) {
+			return ResponseEntity.status(401).body("Authentication failed: " + e.getMessage());
+		}
+	}
+	
+	//get user profile after successfully logged in by taking claims from cookie
+	@GetMapping("/profile")
+	public ResponseEntity<Object> returnUserAfterLog(
+			@AuthenticationPrincipal UserAccount userDetails) {
+		//bcs of jwt filter, we can implement reading like this
+		//otherwise cookie would need to be read manually
+		if (userDetails == null) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+	                .body("Not authenticated");
+	    }
+	    
+	    String email = userDetails.getUsername();
+	    UserAccount potentialUser = userService.loadUserbyEmail(email);
+	    
+	    if (potentialUser == null) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                .body("User not found");
+	    }
+	    
+	    userAccountLogInResponse userResponse = getUserLoginResponse(potentialUser);
+	    return ResponseEntity.ok(userResponse);
 	}
 }

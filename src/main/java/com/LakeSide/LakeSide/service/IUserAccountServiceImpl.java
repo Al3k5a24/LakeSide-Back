@@ -1,5 +1,7 @@
 package com.LakeSide.LakeSide.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -104,11 +106,15 @@ public class IUserAccountServiceImpl implements IUserAccountService{
             throw new InvalidPasswordException("Password is incorrect, try again");
         }
         
+        //add role as claim to payload
+        Map<String, Object> claim = new HashMap();
+        claim.put("role", potentialUser.getRole().name());
+        claim.put("fullName", potentialUser.getFullName());
+        
         // Set logged in status and generate token only after successful authentication
 		// Generate JWT token
-		String jwtToken = jwtService.generateToken(potentialUser);
+		String jwtToken = jwtService.generateToken(claim,potentialUser);
 		potentialUser.setToken(jwtToken);
-		
         potentialUser.setIsLoggedIn(true);
         userRepository.save(potentialUser);
         return potentialUser;
