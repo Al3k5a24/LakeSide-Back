@@ -1,6 +1,8 @@
 package com.LakeSide.LakeSide.response;
 
 public class userAccountLogInResponse {
+	
+	private String fullName;
 
 	private String email;
 	
@@ -46,12 +48,29 @@ public class userAccountLogInResponse {
 		super();
 	}
 
+	public userAccountLogInResponse(String fullName, String email, String password, Boolean isActive, String token) {
+		super();
+		this.fullName=fullName;
+		this.email = email;
+		this.password = password;
+		this.isActive = isActive;
+		this.token = token;
+	}
+
 	public String getToken() {
 		return token;
 	}
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 	
 	

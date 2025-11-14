@@ -6,6 +6,7 @@ import org.apache.tomcat.util.http.SameSiteCookies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -29,6 +30,7 @@ import Configuration.AppConfig;
 import JWT.JWTService;
 import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.java.Log;
 
 @RequestMapping("/auth")
 //CORS policy override for diffrent paths 
@@ -73,6 +75,7 @@ public class UserAccountController {
 	//for login
 	private userAccountLogInResponse getUserLoginResponse(UserAccount user) {
 		return new userAccountLogInResponse(
+				user.getFullName(),
 				user.getEmail(),
 				null, // Never return password
 				user.getIsLoggedIn(),
@@ -97,16 +100,38 @@ public class UserAccountController {
 			HttpServletResponse response) {
 		UserAccount user = userService.SignInExistingAccount(email, password);
 		try {
+			
+			// ✅✅✅ DODAJ LOGOVE OVDE:
+	        System.out.println("========== COOKIE DEBUG ==========");
+	        System.out.println("User token: " + user.getToken());
+	        System.out.println("Properties cookie: " + properties);
+	        System.out.println("Cookie config: " + properties.getCookie());
+	        
+	        if (properties.getCookie() == null) {
+	            System.out.println("❌ ERROR: Cookie configuration is NULL!");
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body("Server configuration error");
+	        }
+	        
 			// Token and logged in status are already set by the service
 			userAccountLogInResponse userResponse = getUserLoginResponse(user);
 			ResponseCookie cookie = ResponseCookie.from(properties.getCookie().getName(), user.getToken())
                     .httpOnly(true)
-                    .secure(true)
+                    .secure(false) //disable httos in order to set cookie
                     .path("/")
                     .maxAge(properties.getCookie().getExpiresIn())
-                    .sameSite(SameSiteCookies.STRICT.toString())
+                    .sameSite("Lax") //to set cookie
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            
+            System.out.println("Cookie added to response header");
+
+         // ✅ DODAJ OVE LOGOVE:
+         System.out.println("Response headers: " + response.getHeaderNames());
+         System.out.println("Set-Cookie header value: " + response.getHeader(HttpHeaders.SET_COOKIE));
+
+         System.out.println("==================================");
+            
 			return ResponseEntity.ok(userResponse);
 		} catch (Exception e) {
 			return ResponseEntity.status(401).body("Authentication failed: " + e.getMessage());
@@ -116,21 +141,33 @@ public class UserAccountController {
 	//get user profile after successfully logged in by taking claims from cookie
 	@GetMapping("/profile")
 	public ResponseEntity<Object> returnUserAfterLog(
-			@AuthenticationPrincipal UserAccount userDetails) {
+			@AuthenticationPrincipal UserAccount userDetails,
+			@CookieValue(name="AUTH_TOKEN", required = false)
+			String token) {
 		//bcs of jwt filter, we can implement reading like this
 		//otherwise cookie would need to be read manually
 		if (userDetails == null) {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 	                .body("Not authenticated");
 	    }
-	    
-	    String email = userDetails.getUsername();
-	    UserAccount potentialUser = userService.loadUserbyEmail(email);
-	    
-	    if (potentialUser == null) {
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-	                .body("User not found");
+		
+		 // Provera 2: Da li postoji cookie
+	    if (token == null || token.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+	                .body("Authentication token missing");
 	    }
+	    
+	    try {
+			if(!authService.isTokenValid(token, userDetails)) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token expired");
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+	                .body("Invalid token");
+		}
+	    
+	    String email = authService.extractEmail(token);
+	    UserAccount potentialUser = userService.loadUserbyEmail(email);
 	    
 	    userAccountLogInResponse userResponse = getUserLoginResponse(potentialUser);
 	    return ResponseEntity.ok(userResponse);
