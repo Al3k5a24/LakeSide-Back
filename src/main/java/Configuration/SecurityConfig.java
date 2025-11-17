@@ -22,12 +22,6 @@ import JWT.JWTService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
-	@Autowired
-	private AuthenticationProvider authenticationProvider;
-	
-	@Autowired
-	private JWTAuthenticationFilter jwtAuthFilter;
 	 
 	//add cookies to web site
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,8 +32,6 @@ public class SecurityConfig {
                 .requestMatchers("/sign-in", "/sign-up", "/register").permitAll()
                 .anyRequest().authenticated()
             );
-           
-        
         return http.build();
     }
 
@@ -49,8 +41,9 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization")); // ✅ VAŽNO!
-        configuration.setAllowCredentials(true); // ✅ MORA!
+        configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization")); // !
+        configuration.setAllowCredentials(true); // !
+        configuration.addAllowedOriginPattern("*");
         configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

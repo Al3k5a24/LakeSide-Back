@@ -2,10 +2,12 @@ package com.LakeSide.LakeSide.controller;
 
 import java.util.Optional;
 
+
 import org.apache.tomcat.util.http.SameSiteCookies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +31,14 @@ import com.LakeSide.LakeSide.service.IUserAccountService;
 import Configuration.AppConfig;
 import JWT.JWTService;
 import io.jsonwebtoken.Jwt;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.val;
 import lombok.extern.java.Log;
 
 @RequestMapping("/auth")
 //CORS policy override for diffrent paths 
-@CrossOrigin(origins="*")
+@CrossOrigin(origins="http://localhost:5173",allowCredentials = "true") //allows us to send cookies
 @RestController
 public class UserAccountController {
 	
@@ -115,13 +119,12 @@ public class UserAccountController {
 	        
 			// Token and logged in status are already set by the service
 			userAccountLogInResponse userResponse = getUserLoginResponse(user);
-			ResponseCookie cookie = ResponseCookie.from(properties.getCookie().getName(), user.getToken())
-                    .httpOnly(true)
-                    .secure(false) //disable httos in order to set cookie
-                    .path("/")
-                    .maxAge(properties.getCookie().getExpiresIn())
-                    .sameSite("Lax") //to set cookie
-                    .build();
+			Cookie cookie = new Cookie("AUTH_TOKEN", user.getToken());
+					cookie.setHttpOnly(true);
+					cookie.setSecure(true); 
+					cookie.setPath("/");
+					cookie.setMaxAge(properties.getCookie().getExpiresIn());
+			response.addCookie(cookie);
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
             
             System.out.println("Cookie added to response header");
