@@ -38,6 +38,46 @@ A robust RESTful API backend for a hotel room booking platform built with Spring
 
 ---
 
+## Project Structure
+
+```
+src/main/java/com/LakeSide/LakeSide/
+├── controller/          # REST API endpoints
+│   ├── RoomController.java
+│   ├── BookedRoomController.java
+│   └── UserAccountController.java
+├── service/            # Business logic layer
+│   ├── IUserAccountServiceImpl.java
+│   └── Room/
+│       ├── RoomServiceImpl.java
+│       └── BookedRoomServiceImpl.java
+├── repository/         # Data access layer
+│   ├── RoomRepository.java
+│   ├── BookedRoomRepository.java
+│   └── UserAccountRepository.java
+├── model/              # Entity classes
+│   ├── Room.java
+│   ├── BookedRoom.java
+│   └── UserAccount.java
+├── response/           # DTO classes for API responses
+│   ├── roomResponse.java
+│   ├── bookedRoomResponse.java
+│   └── userAccountResponse.java
+├── Exception/          # Custom exception handlers
+│   ├── ResourceNotFoundException.java
+│   ├── InvalidPasswordException.java
+│   └── UserAccountNotFoundException.java
+└── Configuration/      # Security and app configuration
+    ├── SecurityConfig.java
+    └── AppConfig.java
+JWT/
+├── JWTService.java           # Token generation and validation
+└── JWTAuthenticationFilter.java  # Request interceptor
+```
+
+---
+
+
 ### Authentication Flow
 1. User registers with email, password, and full name
 2. Email is validated using regex pattern
