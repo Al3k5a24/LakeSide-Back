@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import com.LakeSide.LakeSide.model.UserAccount;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -56,9 +58,9 @@ public class JWTService {
 	}
 	
 	//method to validate jwt token
-	public Boolean isTokenValid(String token, UserDetails userDetails) {
+	public Boolean isTokenValid(String token, UserAccount userDetails) {
 		final String email = extractEmail(token);
-		return (email != null && email.equals(userDetails.getUsername()) && !isTokenExpired(token));
+		return (email != null && email.equals(userDetails.getEmail()) && !isTokenExpired(token));
 	}
 	
 	//check if date is past expiration date

@@ -160,15 +160,6 @@ public class UserAccountController {
 	                .body("Authentication token missing");
 	    }
 	    
-	    try {
-			if(!authService.isTokenValid(token, userDetails)) {
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token expired");
-			}
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-	                .body("Invalid token");
-		}
-	    
 	    String email = authService.extractEmail(token);
 	    UserAccount potentialUser = userService.loadUserbyEmail(email);
 	    

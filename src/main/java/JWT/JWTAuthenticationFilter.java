@@ -10,6 +10,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.LakeSide.LakeSide.model.UserAccount;
 import com.LakeSide.LakeSide.service.IUserAccountService;
 
 import jakarta.servlet.FilterChain;
@@ -55,7 +56,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
 			
 			//check if userEmail is not null and the user has not been authenticated already(not connected)
 			if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-				UserDetails userDetails = this.userService.loadUserbyEmail(userEmail);
+				UserAccount userDetails = this.userService.loadUserbyEmail(userEmail);
 				
 				//check if userDetails exists and token is valid
 				if(userDetails != null && jwtService.isTokenValid(jwt, userDetails)) {
