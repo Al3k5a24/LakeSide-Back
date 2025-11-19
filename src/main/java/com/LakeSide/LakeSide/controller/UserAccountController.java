@@ -104,12 +104,6 @@ public class UserAccountController {
 			HttpServletResponse response) {
 		UserAccount user = userService.SignInExistingAccount(email, password);
 		try {
-			
-			// ✅✅✅ DODAJ LOGOVE OVDE:
-	        System.out.println("========== COOKIE DEBUG ==========");
-	        System.out.println("User token: " + user.getToken());
-	        System.out.println("Properties cookie: " + properties);
-	        System.out.println("Cookie config: " + properties.getCookie());
 	        
 	        if (properties.getCookie() == null) {
 	            System.out.println("❌ ERROR: Cookie configuration is NULL!");
@@ -127,14 +121,6 @@ public class UserAccountController {
 			response.addCookie(cookie);
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
             
-            System.out.println("Cookie added to response header");
-
-         // ✅ DODAJ OVE LOGOVE:
-         System.out.println("Response headers: " + response.getHeaderNames());
-         System.out.println("Set-Cookie header value: " + response.getHeader(HttpHeaders.SET_COOKIE));
-
-         System.out.println("==================================");
-            
 			return ResponseEntity.ok(userResponse);
 		} catch (Exception e) {
 			return ResponseEntity.status(401).body("Authentication failed: " + e.getMessage());
@@ -144,20 +130,15 @@ public class UserAccountController {
 	//get user profile after successfully logged in by taking claims from cookie
 	@GetMapping("/profile")
 	public ResponseEntity<Object> returnUserAfterLog(
-			@AuthenticationPrincipal UserAccount userDetails,
 			@CookieValue(name="AUTH_TOKEN", required = false)
 			String token) {
 		//bcs of jwt filter, we can implement reading like this
 		//otherwise cookie would need to be read manually
-		if (userDetails == null) {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-	                .body("Not authenticated");
-	    }
 		
-		 // Provera 2: Da li postoji cookie
+		 //Does cookie exist
 	    if (token == null || token.isEmpty()) {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-	                .body("Authentication token missing");
+	                .body("Authentication missing");
 	    }
 	    
 	    String email = authService.extractEmail(token);
@@ -166,4 +147,17 @@ public class UserAccountController {
 	    userAccountLogInResponse userResponse = getUserLoginResponse(potentialUser);
 	    return ResponseEntity.ok(userResponse);
 	}
+	
+	//check for cookies in session, if not, user needs to be logged in
+	@GetMapping("/session-cookie")
+	public ResponseEntity<Object> checkSessionCookie (@CookieValue(name="AUTH_TOKEN", required = false)
+	String token){
+		 //Does cookie exist
+	    if (token == null || token.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+	                .body("Authentication missing");
+	    }
+	    return ResponseEntity.ok(token);
+	}
+	
 }
