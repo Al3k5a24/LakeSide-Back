@@ -18,138 +18,133 @@ import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.Data;
 
 @Entity
-@Builder //for jwt 
-@NoArgsConstructor
-@AllArgsConstructor
+@Data // Generates getters, setters, toString, equals, hashCode
+@Builder
+@NoArgsConstructor // Required for JPA
+@AllArgsConstructor // Required for @Builder
 public class UserAccount implements UserDetails{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	@Column
-	private String fullName;
-	
-	@Column
-	private String email;
-	
-	@Column
-	private String password;
-	
-	@Column
-	private Boolean isLoggedIn;
-	
-	@Column
-	@Enumerated(EnumType.STRING)
-	private Role role;
-	
-	@Transient
-	private String token; // Token should not be persisted in database
+    private static final long serialVersionUID = 1L;
 
-	public Boolean getIsLoggedIn() {
-		return isLoggedIn;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	public void setIsLoggedIn(Boolean isLoggedIn) {
-		this.isLoggedIn = isLoggedIn;
-	}
+    @Column
+    private String fullName;
 
-	public Long getId() {
-		return id;
-	}
+    @Column
+    private String email;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column
+    private String password;
 
-	public String getFullName() {
-		return fullName;
-	}
+    @Column
+    private Boolean isLoggedIn;
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-	public String getEmail() {
-		return email;
-	}
+    @Transient
+    private String token;
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public enum Role{
+        USER,
+        ADMIN,
+        OWNER
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (role == null) {
+            return Collections.emptyList();
+        }
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	
-	public UserAccount() {
-		super();
-	}
-	
-	public Role getRole() {
-		return role;
-	}
+    @Override
+    public String getPassword() {
+        return "";
+    }
 
-	public void setRole(Role role) {
-		this.role = role;
-	}
+    @Override
+    public String getUsername() {
+        return getEmail();
+    }
 
-	public enum Role{
-		USER,
-		ADMIN,
-		OWNER
-	}
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// Convert role to Spring Security authority (ROLE_ prefix is required)
-		if (role == null) {
-			return Collections.emptyList();
-		}
-		return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
-	}
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-	@Override
-	public String getUsername() {
-		return getEmail();
-	}
-	
-	@Override
-	public boolean isAccountNonExpired() {
-		return true; // Account never expires
-	}
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-	@Override
-	public boolean isAccountNonLocked() {
-		return true; // Account is never locked
-	}
+    @Override
+    public boolean isEnabled() {
+        return isLoggedIn != null && isLoggedIn;
+    }
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true; // Credentials never expire
-	}
+    public Long getId() {
+        return id;
+    }
 
-	@Override
-	public boolean isEnabled() {
-		return isLoggedIn != null && isLoggedIn; // Account is enabled if logged in
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getToken() {
-		return token;
-	}
+    public String getFullName() {
+        return fullName;
+    }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Boolean getLoggedIn() {
+        return isLoggedIn;
+    }
+
+    public void setLoggedIn(Boolean loggedIn) {
+        isLoggedIn = loggedIn;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }
