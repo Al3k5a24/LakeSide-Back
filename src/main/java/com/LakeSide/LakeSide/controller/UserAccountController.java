@@ -81,8 +81,7 @@ public class UserAccountController {
 		return new userAccountLogInResponse(
 				user.getFullName(),
 				user.getEmail(),
-				null, // Never return password
-				user.getIsLoggedIn(),
+                // Never return password
 				user.getToken());
 	}
 	
@@ -104,13 +103,11 @@ public class UserAccountController {
 			HttpServletResponse response) {
 		UserAccount user = userService.SignInExistingAccount(email, password);
 		try {
-	        
 	        if (properties.getCookie() == null) {
 	            System.out.println("❌ ERROR: Cookie configuration is NULL!");
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                    .body("Server configuration error");
 	        }
-	        
 			// Token and logged in status are already set by the service
 			userAccountLogInResponse userResponse = getUserLoginResponse(user);
 			Cookie cookie = new Cookie("AUTH_TOKEN", user.getToken());

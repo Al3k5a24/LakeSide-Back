@@ -22,6 +22,11 @@ import JWT.JWTService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
 	 
 	//add cookies to web site
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

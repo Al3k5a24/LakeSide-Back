@@ -21,8 +21,8 @@ import lombok.NoArgsConstructor;
 import lombok.Data;
 
 @Entity
-@Data // Generates getters, setters, toString, equals, hashCode
 @Builder
+@Data
 @NoArgsConstructor // Required for JPA
 @AllArgsConstructor // Required for @Builder
 public class UserAccount implements UserDetails{
@@ -41,9 +41,6 @@ public class UserAccount implements UserDetails{
 
     @Column
     private String password;
-
-    @Column
-    private Boolean isLoggedIn;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -67,11 +64,6 @@ public class UserAccount implements UserDetails{
     }
 
     @Override
-    public String getPassword() {
-        return "";
-    }
-
-    @Override
     public String getUsername() {
         return getEmail();
     }
@@ -91,10 +83,10 @@ public class UserAccount implements UserDetails{
         return true;
     }
 
-    @Override
-    public boolean isEnabled() {
-        return isLoggedIn != null && isLoggedIn;
-    }
+//    @Override
+//    public boolean isEnabled() {
+//        return isLoggedIn != null && isLoggedIn;
+//    }
 
     public Long getId() {
         return id;
@@ -120,12 +112,8 @@ public class UserAccount implements UserDetails{
         this.email = email;
     }
 
-    public Boolean getLoggedIn() {
-        return isLoggedIn;
-    }
-
-    public void setLoggedIn(Boolean loggedIn) {
-        isLoggedIn = loggedIn;
+    public String getPassword(){
+        return password;
     }
 
     public void setPassword(String password) {

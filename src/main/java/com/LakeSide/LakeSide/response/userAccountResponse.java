@@ -16,22 +16,16 @@ public class userAccountResponse {
 	private String role;
 	
 	private String token;
-	
-	public userAccountResponse() {
-		super();
-	}
 
-	public userAccountResponse(Long id, String fullName, String email, String password, Boolean isActive, String role) {
-		super();
-		this.id = id;
-		this.fullName = fullName;
-		this.email = email;
-		this.password = password;
-		this.isActive = isActive;
-		this.role = role;
-	}
+    public userAccountResponse(Long id, String fullName, String email, String role, String token) {
+        this.id = id;
+        this.fullName = fullName;
+        this.email = email;
+        this.role = role;
+        this.token=token;
+    }
 
-	public Long getId() {
+    public Long getId() {
 		return id;
 	}
 

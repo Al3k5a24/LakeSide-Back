@@ -12,7 +12,14 @@ public class userAccountLogInResponse {
 	
 	private String token;
 
-	public String getEmail() {
+    public userAccountLogInResponse(String fullName, String email, String token) {
+        super();
+        this.fullName=fullName;
+        this.email=email;
+        this.token=token;
+    }
+
+    public String getEmail() {
 		return email;
 	}
 

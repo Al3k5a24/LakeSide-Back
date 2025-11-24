@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -69,9 +70,8 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		user.setFullName(fullName.trim());
 		user.setEmail(email.trim().toLowerCase());
 		user.setPassword(passwordEncoder.encode(password));
-		user.setIsLoggedIn(false);
 		user.setRole(Role.USER);
-		
+		System.out.println(user);
 		// Save user
 		UserAccount savedUser = userRepository.save(user);
 		
@@ -81,7 +81,6 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 				savedUser.getFullName(),
 				savedUser.getEmail(),
 				null, // Never return password
-				savedUser.getIsLoggedIn(),
 				savedUser.getRole().name()
 		);
 	}
@@ -100,12 +99,14 @@ public class IUserAccountServiceImpl implements IUserAccountService{
         UserAccount potentialUser = userRepository.findUserByEmail(email.trim().toLowerCase())
                 .orElseThrow(() -> new UserAccountNotFoundException(
                     "User with email " + email + " not found"));
-        
+
+        System.out.println("password from input:"+password);
+        System.out.println("user password from database"+potentialUser.getPassword());
+
         // Verify password BEFORE setting logged in status
         if (!passwordEncoder.matches(password, potentialUser.getPassword())) {
             throw new InvalidPasswordException("Password is incorrect, try again");
         }
-        
         //add role as claim to payload
         Map<String, Object> claim = new HashMap();
         claim.put("role", potentialUser.getRole().name());
@@ -115,7 +116,6 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		// Generate JWT token
 		String jwtToken = jwtService.generateToken(claim,potentialUser);
 		potentialUser.setToken(jwtToken);
-        potentialUser.setIsLoggedIn(true);
         userRepository.save(potentialUser);
         return potentialUser;
 	}

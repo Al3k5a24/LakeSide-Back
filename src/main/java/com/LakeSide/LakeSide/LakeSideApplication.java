@@ -17,7 +17,7 @@ public class LakeSideApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LakeSideApplication.class, args);
 	}
-	
+
 	//had error where it "could not" find this 2, now works when entered here
 	 @Bean
 	 public PasswordEncoder passwordEncoder() {
@@ -28,10 +28,9 @@ public class LakeSideApplication {
 	    public JWTService jwtService() {
 	        return new JWTService();
 	    }
-	 
+
 	 @Bean
 	    public AppConfig properties() {
-	        return new AppConfig();
-	    }
-	 
+         return new AppConfig();
+     }
 }
