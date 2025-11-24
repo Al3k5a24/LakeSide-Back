@@ -3,6 +3,7 @@ package com.LakeSide.LakeSide.controller;
 import java.util.Optional;
 
 
+import jakarta.servlet.http.HttpServlet;
 import org.apache.tomcat.util.http.SameSiteCookies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -103,11 +104,6 @@ public class UserAccountController {
 			HttpServletResponse response) {
 		UserAccount user = userService.SignInExistingAccount(email, password);
 		try {
-	        if (properties.getCookie() == null) {
-	            System.out.println("❌ ERROR: Cookie configuration is NULL!");
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body("Server configuration error");
-	        }
 			// Token and logged in status are already set by the service
 			userAccountLogInResponse userResponse = getUserLoginResponse(user);
 			Cookie cookie = new Cookie("AUTH_TOKEN", user.getToken());
@@ -144,17 +140,17 @@ public class UserAccountController {
 	    userAccountLogInResponse userResponse = getUserLoginResponse(potentialUser);
 	    return ResponseEntity.ok(userResponse);
 	}
-	
-	//check for cookies in session, if not, user needs to be logged in
-	@GetMapping("/session-cookie")
-	public ResponseEntity<Object> checkSessionCookie (@CookieValue(name="AUTH_TOKEN", required = false)
-	String token){
-		 //Does cookie exist
-	    if (token == null || token.isEmpty()) {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-	                .body("Authentication missing");
-	    }
-	    return ResponseEntity.ok(token);
+
+	@GetMapping("/delete-cookie")
+	public ResponseEntity<Object> deleteCookie (
+            HttpServletResponse response){
+        Cookie cookieToDelete = new Cookie("AUTH_TOKEN",null);
+        cookieToDelete.setPath("/");
+        cookieToDelete.setMaxAge(0);
+        cookieToDelete.setHttpOnly(true);
+        cookieToDelete.setSecure(true);
+        response.addCookie(cookieToDelete);
+        return ResponseEntity.ok("Cookie successfully deleted");
 	}
 	
 }
