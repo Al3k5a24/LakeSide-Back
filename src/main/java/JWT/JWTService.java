@@ -8,7 +8,10 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -56,6 +59,24 @@ public class JWTService {
 	            .signWith(getSignInKey(), SignatureAlgorithm.HS256)
 	            .compact();
 	}
+
+    public void deleteCookie(HttpServletResponse response){
+        Cookie cookieToDelete = new Cookie("AUTH_TOKEN",null);
+        cookieToDelete.setPath("/");
+        cookieToDelete.setMaxAge(0);
+        cookieToDelete.setHttpOnly(true);
+        cookieToDelete.setSecure(true);
+        response.addCookie(cookieToDelete);
+    }
+
+    public void generateCookie(HttpServletResponse response, String token){
+        Cookie cookie = new Cookie("AUTH_TOKEN", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(24*60*60*7); //7 days
+        response.addCookie(cookie);
+    }
 	
 	//method to validate jwt token
 	public Boolean isTokenValid(String token, UserAccount userDetails) {

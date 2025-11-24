@@ -1,21 +1,11 @@
 package com.LakeSide.LakeSide.controller;
 
-import java.util.Optional;
 
-
-import jakarta.servlet.http.HttpServlet;
-import org.apache.tomcat.util.http.SameSiteCookies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,11 +21,8 @@ import com.LakeSide.LakeSide.service.IUserAccountService;
 
 import Configuration.AppConfig;
 import JWT.JWTService;
-import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.val;
-import lombok.extern.java.Log;
 
 @RequestMapping("/auth")
 //CORS policy override for diffrent paths 
@@ -48,7 +35,7 @@ public class UserAccountController {
 	private AppConfig properties;
 	
 	@Autowired
-    private JWTService authService;
+    private JWTService jwtService;
 
 	@Autowired
 	private IUserAccountService userService;
@@ -69,12 +56,12 @@ public class UserAccountController {
 		this.properties = properties;
 	}
 
-	public JWTService getAuthService() {
-		return authService;
+	public JWTService getJwtService() {
+		return jwtService;
 	}
 
-	public void setAuthService(JWTService authService) {
-		this.authService = authService;
+	public void setJwtService(JWTService jwtService) {
+		this.jwtService = jwtService;
 	}
 	
 	//for login
@@ -106,14 +93,7 @@ public class UserAccountController {
 		try {
 			// Token and logged in status are already set by the service
 			userAccountLogInResponse userResponse = getUserLoginResponse(user);
-			Cookie cookie = new Cookie("AUTH_TOKEN", user.getToken());
-					cookie.setHttpOnly(true);
-					cookie.setSecure(true); 
-					cookie.setPath("/");
-					cookie.setMaxAge(properties.getCookie().getExpiresIn());
-			response.addCookie(cookie);
-            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-            
+			jwtService.generateCookie(response,userResponse.getToken());
 			return ResponseEntity.ok(userResponse);
 		} catch (Exception e) {
 			return ResponseEntity.status(401).body("Authentication failed: " + e.getMessage());
@@ -134,7 +114,7 @@ public class UserAccountController {
 	                .body("Authentication missing");
 	    }
 	    
-	    String email = authService.extractEmail(token);
+	    String email = jwtService.extractEmail(token);
 	    UserAccount potentialUser = userService.loadUserbyEmail(email);
 	    
 	    userAccountLogInResponse userResponse = getUserLoginResponse(potentialUser);
@@ -142,14 +122,9 @@ public class UserAccountController {
 	}
 
 	@GetMapping("/delete-cookie")
-	public ResponseEntity<Object> deleteCookie (
+	public ResponseEntity<Object> deleteCookieEndPoint (
             HttpServletResponse response){
-        Cookie cookieToDelete = new Cookie("AUTH_TOKEN",null);
-        cookieToDelete.setPath("/");
-        cookieToDelete.setMaxAge(0);
-        cookieToDelete.setHttpOnly(true);
-        cookieToDelete.setSecure(true);
-        response.addCookie(cookieToDelete);
+        jwtService.deleteCookie(response);
         return ResponseEntity.ok("Cookie successfully deleted");
 	}
 	

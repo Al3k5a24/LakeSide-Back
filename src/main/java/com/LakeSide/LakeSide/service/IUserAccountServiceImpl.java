@@ -71,7 +71,6 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		user.setEmail(email.trim().toLowerCase());
 		user.setPassword(passwordEncoder.encode(password));
 		user.setRole(Role.USER);
-		System.out.println(user);
 		// Save user
 		UserAccount savedUser = userRepository.save(user);
 		
@@ -99,10 +98,6 @@ public class IUserAccountServiceImpl implements IUserAccountService{
         UserAccount potentialUser = userRepository.findUserByEmail(email.trim().toLowerCase())
                 .orElseThrow(() -> new UserAccountNotFoundException(
                     "User with email " + email + " not found"));
-
-        System.out.println("password from input:"+password);
-        System.out.println("user password from database"+potentialUser.getPassword());
-
         // Verify password BEFORE setting logged in status
         if (!passwordEncoder.matches(password, potentialUser.getPassword())) {
             throw new InvalidPasswordException("Password is incorrect, try again");
