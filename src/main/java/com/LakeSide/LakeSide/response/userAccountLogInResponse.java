@@ -8,8 +8,6 @@ public class userAccountLogInResponse {
 	
 	private String password;
 	
-	private Boolean isActive=false;
-	
 	private String token;
 
     public userAccountLogInResponse(String fullName, String email, String token) {
@@ -35,33 +33,8 @@ public class userAccountLogInResponse {
 		this.password = password;
 	}
 
-	public Boolean getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-
-	public userAccountLogInResponse(String email, String password, Boolean isActive, String token) {
-		super();
-		this.email = email;
-		this.password = password;
-		this.isActive = isActive;
-		this.token = token;
-	}
-
 	public userAccountLogInResponse() {
 		super();
-	}
-
-	public userAccountLogInResponse(String fullName, String email, String password, Boolean isActive, String token) {
-		super();
-		this.fullName=fullName;
-		this.email = email;
-		this.password = password;
-		this.isActive = isActive;
-		this.token = token;
 	}
 
 	public String getToken() {

@@ -8,7 +8,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 
-//Response DTOs
+//Response DTO
 //we can choose what data should be sent and seen by guest
 public class roomResponse {
     private Long id;

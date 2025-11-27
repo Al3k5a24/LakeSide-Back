@@ -46,21 +46,28 @@ import jakarta.transaction.Transactional;
 @CrossOrigin(origins="*")
 @RestController
 public class RoomController {
-	
-	//DO NOT FORGET TO WIRE
+
 	@Autowired
 	private IRoomService roomService;
-	
-	//method that will return response entity of roomresponse
-	//roomresponse is dto class 
-	
+
 	public IRoomService getRoomService() {
-		return roomService;
+        return roomService;
 	}
 
 	public void setRoomService(IRoomService roomService) {
-		this.roomService = roomService;
+        this.roomService = roomService;
 	}
+
+    @Autowired
+    private IBookedRoomService broomService;
+
+    public IBookedRoomService getBroomService() {
+        return broomService;
+    }
+
+    public void setBroomService(IBookedRoomService broomService) {
+        this.broomService = broomService;
+    }
 	
 
 	@PostMapping("/add/new-room")
@@ -78,14 +85,12 @@ public class RoomController {
 		return ResponseEntity.ok(response);
 		
 	}
-	
-	//get all room types from database
+
 	@GetMapping("/room-types")
 	public List<String> getRoomTypes(){
-		return roomService.getAllRoomTypes();
+        return roomService.getAllRoomTypes();
 	}
-	
-	//fetch all rooms from database
+
 	@GetMapping("/all-rooms")
 	@Transactional
 	public ResponseEntity<List<roomResponse>> getAllRooms() throws SQLException{
@@ -106,8 +111,7 @@ public class RoomController {
 		}
 		return ResponseEntity.ok(roomResponse);
 	}
-	
-	//function that will delete room from databases
+
 	@DeleteMapping("/delete/room/{roomId}")
 	public ResponseEntity<Void> deleteRoom(@PathVariable("roomId") Long roomId){
 		roomService.deleteRoom(roomId);
@@ -116,14 +120,6 @@ public class RoomController {
 
 	@Transactional
 	private roomResponse getRoomResponse(Room room) {
-//		List<BookedRoom> bookings=getAllBookingsById(room.getId());
-//		//get booking history
-//		List<bookedRoomResponse> bookingsInfo = bookings.stream().map(booking -> new
-//				bookedRoomResponse(
-//						booking.getBookingId(),
-//						booking.getCheckInDate(),
-//						booking.getCheckOutDate(), 
-//						booking.getBookingConfCode())).toList();
 		byte[] photoByte=null;
 		Blob photoBlob = room.getPhoto();
 		
@@ -141,22 +137,15 @@ public class RoomController {
 				room.isBooked(),photoByte);
 	}
 
-//	private List<BookedRoom> getAllBookingsById(Long id) {
-//		return broomService.getAllBookingsByRoomId(id);
-//	}
-	
-	//function that will update room in Edit room view
 	@PutMapping(value="/update/room/{roomId}")
 	public ResponseEntity<roomResponse> updateRoom(@PathVariable Long roomId,
 			@RequestParam(required=false) String roomType,
 			@RequestParam(required=false) BigDecimal roomPrice,
 		@RequestParam(required=false) MultipartFile photo) throws IOException, SQLException{
-		
-		//check if photo has picture
+
 		byte[] photoByte=photo != null && !photo.isEmpty() ? 
 				photo.getBytes() : roomService.getRoomPhotoByRoomID(roomId);
-		
-		//we are converting bytes to Blob  
+
 		Blob photoBlob = photoByte != null && photoByte.length>0 ? new SerialBlob(photoByte) : null;
 		Room theRoom = roomService.updateRoom(roomId,roomType,roomPrice,photoByte);
 		theRoom.setPhoto(photoBlob);
@@ -164,48 +153,27 @@ public class RoomController {
 		roomResponse RoomResponse=getRoomResponse(theRoom);
 		return ResponseEntity.ok(RoomResponse);
 	}
-	
-	//function that will generate random conf code for booking
+
 	private String generateConfirmationCode(Room room) {
-		//combine timestamp+ID+random
+		//combine timestamp+ID+random = conf code
 		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
         String roomCode = String.format("%03d", room.getId());
         String random = String.format("%04d", ThreadLocalRandom.current().nextInt(1000, 9999));
-        
         return "BK"+timestamp+roomCode+random;
 	}
-	
-	//function to get single room by ID to update
+
 	@GetMapping("/room/{roomId}")
 	@Transactional
-	public ResponseEntity<Optional<roomResponse>> getRoomByID(@PathVariable Long roomId){
+	public ResponseEntity<Optional<roomResponse>> getSingleRoomByID(@PathVariable Long roomId){
 		Optional<Room> theRoom=roomService.getRoomID(roomId);
 		return theRoom.map(room ->{
 			roomResponse roomResponse = getRoomResponse(room);
 			return ResponseEntity.ok(Optional.of(roomResponse));
 			}).orElseThrow(() -> new ResourceNotFoundException("Room not found"));
 	}
-	
 
-	// DO NOT FORGET TO WIRE
-	@Autowired
-	private IBookedRoomService broomService;
-
-	// method that will return response entity of roomresponse
-	// roomresponse is dto class
-	public IBookedRoomService getBroomService() {
-		return broomService;
-	}
-
-	public void setBroomService(IBookedRoomService broomService) {
-		this.broomService = broomService;
-	}
-
-	//dto function for booking a room
 	@Transactional
 	private bookedRoomResponse getBookedRoomResponse(BookedRoom broom) {
-		//LocalDate checkInDate, LocalDate checkOutDate, String guestFullName,
-        //String guestEmail, int numOfAdults, int numOfChildren,roomResponse room
 		return new bookedRoomResponse(broom.getCheckInDate(),
 				broom.getCheckOutDate(),
 				broom.getGuestFullName(),
@@ -215,11 +183,10 @@ public class RoomController {
 				broom.calculateTotalGuest(),
 				getRoomResponse(broom.getRoom()));
 	}
-	
-	//book a single room
+
 	@PostMapping(value="/browse-rooms/booking/{roomId}")
 	@Transactional
-	public ResponseEntity<bookedRoomResponse> roomBooking(
+	public ResponseEntity<bookedRoomResponse> bookARoom(
 			@PathVariable Long roomId,
 			@RequestParam String guestFullName,
 			@RequestParam String guestEmail,
@@ -229,19 +196,18 @@ public class RoomController {
 			@RequestParam int numOfChildren) throws IOException, SQLException{
 		Room room=roomService.getRoomInfoById(roomId);
 		int totalNumberOfGuests=numOfAdults+numOfChildren;
-		
-		//function for confCode
+
 		String bookingCode=generateConfirmationCode(room);
 		BookedRoom broom=broomService.bookRoom(checkInDate, checkOutDate, guestFullName,
 				guestEmail, numOfAdults,bookingCode, numOfChildren,totalNumberOfGuests, room);
-		//in case of removed booking, room should be listed as available	
-		if(broom.getRoom().getId()!=null) {
-			room.setBooked(true);
-		}else {
-			room.setBooked(false);
-		}
-		
-		bookedRoomResponse broomResponse=getBookedRoomResponse(broom);
+
+        //in case of removed booking, room should be listed as available
+        if (broom.getRoom().getId() == null) {
+            room.setBooked(false);
+        } else {
+            room.setBooked(true);
+        }
+        bookedRoomResponse broomResponse=getBookedRoomResponse(broom);
 	return ResponseEntity.ok(broomResponse);
 	}
 

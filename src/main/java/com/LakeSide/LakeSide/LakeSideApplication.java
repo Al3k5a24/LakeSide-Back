@@ -18,7 +18,7 @@ public class LakeSideApplication {
 		SpringApplication.run(LakeSideApplication.class, args);
 	}
 
-	//had error where it "could not" find this 2, now works when entered here
+	 //had error where it "could not" find this 2, now works when entered here
 	 @Bean
 	 public PasswordEncoder passwordEncoder() {
 	    return new BCryptPasswordEncoder();

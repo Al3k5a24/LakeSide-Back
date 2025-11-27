@@ -21,9 +21,9 @@ import jakarta.validation.constraints.NotNull;
 
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter{
-//name is self-explainatory, once per user request this class should start
-	
+    //name is self-explainatory, once per user request this class should start
 	//class that will extract user info from token
+
 	@Autowired
 	private JWTService jwtService;
 	
@@ -37,9 +37,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
 			@NotNull FilterChain filterChain)
 			throws ServletException, IOException {
 		try {
-			//JWT token header - Fixed typo: "Athorization" -> "Authorization"
+			//JWT token header
 			final String authHeader = request.getHeader("Authorization"); 
 			final String jwt;
+
 			//data from user request that will be extracted from fields in order to check if user is in our database
 			final String userEmail;
 			

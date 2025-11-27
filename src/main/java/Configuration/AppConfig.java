@@ -42,32 +42,12 @@ public class AppConfig {
 			this.expiresIn = expiresIn;
 		}
     }
-	
-	@Bean
-	public UserDetailsService userDetailsService() {
-		return email -> userRepo.findUserByEmail(email)
-				.orElseThrow(() -> new UserAccountNotFoundException("Account has not been found!"));
-	}
-	
-	//used to fetch user details
-	@Bean
-	public AuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
-		daoProvider.setUserDetailsService(userDetailsService());
-		daoProvider.setPasswordEncoder(passwordEncoder);
-		return daoProvider;
-	}
-	
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-		return config.getAuthenticationManager();
-	}
 
 	public CookieConfiguration getCookie() {
-		return cookie;
+        return cookie;
 	}
 
 	public void setCookie(CookieConfiguration cookie) {
-		this.cookie = cookie;
+        this.cookie = cookie;
 	}
 }

@@ -27,25 +27,24 @@ import java.util.Optional;
 @Service
 @CrossOrigin(origins="*")
 public class RoomServiceImpl implements IRoomService{
-	
-	//DO NOT FORGET TO WIRE
+
 	@Autowired
 	private RoomRepository roomRepository;
 
 	public RoomRepository getRoomRepository() {
-		return roomRepository;
+        return roomRepository;
 	}
 
 	public void setRoomRepository(RoomRepository roomRepository) {
-		this.roomRepository = roomRepository;
+        this.roomRepository = roomRepository;
 	}
 
 	public Room addNewRoom(MultipartFile photo, String roomType, BigDecimal roomPrice) throws SerialException, SQLException {
 		Room room=new Room();
 		room.setRoomType(roomType);
 		room.setRoomPrice(roomPrice);
-		
-		//picture
+
+		//picture conversion
 		if(!photo.isEmpty() && roomPrice!=null) {
 			try {
 				byte[] photoByte;
@@ -53,7 +52,6 @@ public class RoomServiceImpl implements IRoomService{
 				Blob photoBlob=new SerialBlob(photoByte);
 				room.setPhoto(photoBlob);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();}
 	}
 		return roomRepository.save(room);
@@ -72,7 +70,7 @@ public class RoomServiceImpl implements IRoomService{
 	@Override
 	@Transactional //for LOBs (pictures)
 	public byte[] getRoomPhotoByRoomID(Long roomId) throws SQLException {
-		//if room exists,return 
+
 		Optional<Room> theRoom=roomRepository.findById(roomId);
 		if(theRoom.isEmpty()) {
 			throw new ResourceNotFoundException("Sorry, Room was not found!");
@@ -111,7 +109,7 @@ public class RoomServiceImpl implements IRoomService{
 
 	@Override
 	public Optional<Room> getRoomID(Long roomId) {
-		return Optional.of(roomRepository.findById(roomId).get());
+        return Optional.of(roomRepository.findById(roomId).get());
 	}
 
 	@Override

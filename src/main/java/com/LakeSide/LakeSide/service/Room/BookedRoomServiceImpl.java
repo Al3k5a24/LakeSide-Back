@@ -28,10 +28,9 @@ public class BookedRoomServiceImpl implements IBookedRoomService{
 	private BookedRoomRepository broomrepository;
 
 	public BookedRoomRepository getBroomrepository() {
-		return broomrepository;
+        return broomrepository;
 	}
 
-	//name of function says it all
 	@Override
 	@Transactional
 	public BookedRoom bookRoom(LocalDate checkInDate, LocalDate checkOutDate, String guestFullName, String guestEmail,

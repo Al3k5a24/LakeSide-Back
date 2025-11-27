@@ -26,7 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @RequestMapping("/auth")
 //CORS policy override for diffrent paths 
-@CrossOrigin(origins="http://localhost:5173",allowCredentials = "true") //allows us to send cookies
+@CrossOrigin(origins="http://localhost:5173",allowCredentials = "true") //allowCredentials allows us to send cookies
 @RestController
 public class UserAccountController {
 	
@@ -41,35 +41,33 @@ public class UserAccountController {
 	private IUserAccountService userService;
 
 	public IUserAccountService getUserService() {
-		return userService;
+        return userService;
 	}
 
 	public void setUserService(IUserAccountService userService) {
-		this.userService = userService;
+        this.userService = userService;
 	}
 	
 	public AppConfig getProperties() {
-		return properties;
+        return properties;
 	}
 
 	public void setProperties(AppConfig properties) {
-		this.properties = properties;
+        this.properties = properties;
 	}
 
 	public JWTService getJwtService() {
-		return jwtService;
+        return jwtService;
 	}
 
 	public void setJwtService(JWTService jwtService) {
-		this.jwtService = jwtService;
+        this.jwtService = jwtService;
 	}
-	
-	//for login
+
 	private userAccountLogInResponse getUserLoginResponse(UserAccount user) {
 		return new userAccountLogInResponse(
 				user.getFullName(),
 				user.getEmail(),
-                // Never return password
 				user.getToken());
 	}
 	
@@ -78,7 +76,6 @@ public class UserAccountController {
 			@RequestParam String fullName,
 			@RequestParam String email,
 			@RequestParam String password){
-		// Service already returns userAccountResponse with token
 		userAccountResponse userResponse = userService.createAccount(fullName, email, password);
 		return ResponseEntity.ok(userResponse);
 	}
@@ -107,8 +104,7 @@ public class UserAccountController {
 			String token) {
 		//bcs of jwt filter, we can implement reading like this
 		//otherwise cookie would need to be read manually
-		
-		 //Does cookie exist
+
 	    if (token == null || token.isEmpty()) {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 	                .body("Authentication missing");

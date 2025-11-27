@@ -24,35 +24,39 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+//JSON web token components:
+//Header->contains type of token(JWT predominantly) and sign in type used
+//Payload -> all informations that are transfered between 2 parties
+//Signature -> checks origin of the token and if it was not modified along the way
+
 @Service
 public class JWTService {
-	//JSON web token components:
-	//Header->contains type of token(JWT predominantly) and sign in type used
-	//Payload -> all informations that are transfered between 2 parties
-	//Signature -> checks origin of the token and if it was not modified along the way
 
 	//key is used to verify and sign JWT token - loaded from application.properties
 	@Value("${jwt.secret.key}")
 	private String secretKey;
-	
+
+    //period in which token is valid - loaded from application.properties
 	@Value("${jwt.expiration}")
 	private long jwtExpiration;
 	
 	public String extractEmail(String token) {
-		return extractClaim(token, Claims::getSubject);
+        return extractClaim(token, Claims::getSubject);
 	}
+
+    private int cookieExpiration = 604800;
+    private String cookieName = "AUTH_TOKEN";
 	
 	//basic jwt token, just for user creation
 	public String generateToken(UserDetails userDetails) {
-	    return generateToken(new HashMap<>(), userDetails);
+        return generateToken(new HashMap<>(), userDetails);
 	}
-	
-	//jwt token generated from claims, with creation and expiration date
+
 	public String generateToken(
 			Map<String, Object> extraClaims,
 			UserDetails userDetails) {
 	    return Jwts.builder()
-	            .setClaims(extraClaims)  // Prvo postavi extra claims
+	            .setClaims(extraClaims)
 	            .setSubject(userDetails.getUsername())
 	            .setIssuedAt(new Date(System.currentTimeMillis()))
 	            .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
@@ -61,7 +65,7 @@ public class JWTService {
 	}
 
     public void deleteCookie(HttpServletResponse response){
-        Cookie cookieToDelete = new Cookie("AUTH_TOKEN",null);
+        Cookie cookieToDelete = new Cookie(cookieName,null);
         cookieToDelete.setPath("/");
         cookieToDelete.setMaxAge(0);
         cookieToDelete.setHttpOnly(true);
@@ -70,27 +74,25 @@ public class JWTService {
     }
 
     public void generateCookie(HttpServletResponse response, String token){
-        Cookie cookie = new Cookie("AUTH_TOKEN", token);
+        Cookie cookie = new Cookie(cookieName, token);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setMaxAge(24*60*60*7); //7 days
+        cookie.setMaxAge(cookieExpiration); //7 days
         response.addCookie(cookie);
     }
-	
-	//method to validate jwt token
+
 	public Boolean isTokenValid(String token, UserAccount userDetails) {
 		final String email = extractEmail(token);
 		return (email != null && email.equals(userDetails.getEmail()) && !isTokenExpired(token));
 	}
-	
-	//check if date is past expiration date
+
 	private boolean isTokenExpired(String token) {
-		return extractExpiration(token).before(new Date());
+        return extractExpiration(token).before(new Date());
 	}
 	
 	private Date extractExpiration(String token) {
-		return extractClaim(token, Claims::getExpiration);
+        return extractClaim(token, Claims::getExpiration);
 	}
 
 	//!!! claims represent information from user sent in request which will be used to create JWT by server

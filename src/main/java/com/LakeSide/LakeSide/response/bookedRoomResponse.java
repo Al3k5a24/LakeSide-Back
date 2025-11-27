@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import lombok.Data;
 
+//Response DTO
+//we can choose what data should be sent and seen by guest
 public class bookedRoomResponse {
 
     private Long bookingId;
