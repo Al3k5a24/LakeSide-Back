@@ -40,30 +40,6 @@ public class UserAccountController {
 	@Autowired
 	private IUserAccountService userService;
 
-	public IUserAccountService getUserService() {
-        return userService;
-	}
-
-	public void setUserService(IUserAccountService userService) {
-        this.userService = userService;
-	}
-	
-	public AppConfig getProperties() {
-        return properties;
-	}
-
-	public void setProperties(AppConfig properties) {
-        this.properties = properties;
-	}
-
-	public JWTService getJwtService() {
-        return jwtService;
-	}
-
-	public void setJwtService(JWTService jwtService) {
-        this.jwtService = jwtService;
-	}
-
 	private userAccountLogInResponse getUserLoginResponse(UserAccount user) {
 		return new userAccountLogInResponse(
 				user.getFullName(),
@@ -104,24 +80,13 @@ public class UserAccountController {
 			String token) {
 		//bcs of jwt filter, we can implement reading like this
 		//otherwise cookie would need to be read manually
-
 	    if (token == null || token.isEmpty()) {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 	                .body("Authentication missing");
 	    }
-	    
 	    String email = jwtService.extractEmail(token);
 	    UserAccount potentialUser = userService.loadUserbyEmail(email);
-	    
 	    userAccountLogInResponse userResponse = getUserLoginResponse(potentialUser);
 	    return ResponseEntity.ok(userResponse);
 	}
-
-	@GetMapping("/delete-cookie")
-	public ResponseEntity<Object> deleteCookieEndPoint (
-            HttpServletResponse response){
-        jwtService.deleteCookie(response);
-        return ResponseEntity.ok("Cookie successfully deleted");
-	}
-	
 }

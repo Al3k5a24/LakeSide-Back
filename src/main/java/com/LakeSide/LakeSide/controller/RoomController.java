@@ -15,19 +15,16 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 
+import JWT.JWTService;
+import com.LakeSide.LakeSide.model.UserAccount;
+import com.LakeSide.LakeSide.requests.BookRoomRBody;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.LakeSide.LakeSide.Exception.PhotoRetrievalException;
@@ -50,25 +47,8 @@ public class RoomController {
 	@Autowired
 	private IRoomService roomService;
 
-	public IRoomService getRoomService() {
-        return roomService;
-	}
-
-	public void setRoomService(IRoomService roomService) {
-        this.roomService = roomService;
-	}
-
     @Autowired
     private IBookedRoomService broomService;
-
-    public IBookedRoomService getBroomService() {
-        return broomService;
-    }
-
-    public void setBroomService(IBookedRoomService broomService) {
-        this.broomService = broomService;
-    }
-	
 
 	@PostMapping("/add/new-room")
 	public ResponseEntity<roomResponse> addNewRoom(
@@ -154,14 +134,6 @@ public class RoomController {
 		return ResponseEntity.ok(RoomResponse);
 	}
 
-	private String generateConfirmationCode(Room room) {
-		//combine timestamp+ID+random = conf code
-		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-        String roomCode = String.format("%03d", room.getId());
-        String random = String.format("%04d", ThreadLocalRandom.current().nextInt(1000, 9999));
-        return "BK"+timestamp+roomCode+random;
-	}
-
 	@GetMapping("/room/{roomId}")
 	@Transactional
 	public ResponseEntity<Optional<roomResponse>> getSingleRoomByID(@PathVariable Long roomId){
@@ -172,43 +144,14 @@ public class RoomController {
 			}).orElseThrow(() -> new ResourceNotFoundException("Room not found"));
 	}
 
-	@Transactional
-	private bookedRoomResponse getBookedRoomResponse(BookedRoom broom) {
-		return new bookedRoomResponse(broom.getCheckInDate(),
-				broom.getCheckOutDate(),
-				broom.getGuestFullName(),
-				broom.getGuestEmail(),
-				broom.getNumOfAdults(),
-				broom.getNumOfChildren(),
-				broom.calculateTotalGuest(),
-				getRoomResponse(broom.getRoom()));
-	}
-
 	@PostMapping(value="/browse-rooms/booking/{roomId}")
 	@Transactional
 	public ResponseEntity<bookedRoomResponse> bookARoom(
-			@PathVariable Long roomId,
-			@RequestParam String guestFullName,
-			@RequestParam String guestEmail,
-			@RequestParam LocalDate checkInDate,
-			@RequestParam LocalDate checkOutDate,
-			@RequestParam int numOfAdults,
-			@RequestParam int numOfChildren) throws IOException, SQLException{
-		Room room=roomService.getRoomInfoById(roomId);
-		int totalNumberOfGuests=numOfAdults+numOfChildren;
-
-		String bookingCode=generateConfirmationCode(room);
-		BookedRoom broom=broomService.bookRoom(checkInDate, checkOutDate, guestFullName,
-				guestEmail, numOfAdults,bookingCode, numOfChildren,totalNumberOfGuests, room);
-
-        //in case of removed booking, room should be listed as available
-        if (broom.getRoom().getId() == null) {
-            room.setBooked(false);
-        } else {
-            room.setBooked(true);
-        }
-        bookedRoomResponse broomResponse=getBookedRoomResponse(broom);
-	return ResponseEntity.ok(broomResponse);
+            @PathVariable Long roomId,
+            @RequestBody BookRoomRBody body,
+            @AuthenticationPrincipal UserAccount user) throws IOException, SQLException{
+        //
+	return null;
 	}
 
 }

@@ -4,11 +4,17 @@ import java.beans.Transient;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.sql.rowset.serial.SerialBlob;
 
+import com.LakeSide.LakeSide.Exception.RoomIsBookedException;
+import com.LakeSide.LakeSide.model.UserAccount;
+import com.LakeSide.LakeSide.requests.BookRoomRBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,39 +33,38 @@ public class BookedRoomServiceImpl implements IBookedRoomService{
 	@Autowired
 	private BookedRoomRepository broomrepository;
 
-	public BookedRoomRepository getBroomrepository() {
-        return broomrepository;
-	}
+    @Autowired
+    private IRoomService roomService;
+
+
+    private String generateConfirmationCode(Room room) {
+        //combine timestamp+ID+random = conf code
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+        String roomCode = String.format("%03d", room.getId());
+        String random = String.format("%04d", ThreadLocalRandom.current().nextInt(1000, 9999));
+        return "BK"+timestamp+roomCode+random;
+    }
 
 	@Override
 	@Transactional
-	public BookedRoom bookRoom(LocalDate checkInDate, LocalDate checkOutDate, String guestFullName, String guestEmail,
-			int numOfAdults,String BookingConfCode , int numOfChildren,int totalNumberOfGuests ,Room room) {
-		BookedRoom BRoom = new BookedRoom();
-		BRoom.setCheckInDate(checkInDate);
-		BRoom.setCheckOutDate(checkOutDate);
-		BRoom.setGuestFullName(guestFullName);
-		BRoom.setGuestEmail(guestEmail);
-		BRoom.setNumOfAdults(numOfAdults);
-		BRoom.setNumOfChildren(numOfChildren);
-		BRoom.setBookingConfCode(BookingConfCode);
-		BRoom.calculateTotalGuest();
-		byte[] photoByte=null;
-		Blob photoBlob = room.getPhoto();
-		
-		//convert photo so we can display it
-		if(photoBlob != null) {
-			try {
-				photoByte=photoBlob.getBytes(1, (int)photoBlob.length());
-				room.setPhoto(new SerialBlob(photoByte));
-			} catch (SQLException e) {
-				throw new PhotoRetrievalException("Error retrieving photo");
-			}
-		}
-		BRoom.setRoom(room);
-		
-		broomrepository.save(BRoom);
-		return BRoom;
+	public BookedRoom bookRoom(Long roomID, BookRoomRBody request, UserAccount user) {
+        Room room = roomService.getRoomInfoById(roomID);
+        BookedRoom bRoom = new BookedRoom();
+        if(room.isBooked()){
+            throw  new RoomIsBookedException("Room has been already booked!");
+        }
+        bRoom.setGuestFullName(user.getEmail());
+        bRoom.setGuestEmail(user.getEmail());
+        bRoom.setCheckInDate(request.getCheckInDate());
+        bRoom.setCheckOutDate(request.getCheckOutDate());
+        bRoom.setNumOfAdults(request.getNumOfAdults());
+        bRoom.setNumOfChildren(request.getNumOfChildren());
+        String confCode=generateConfirmationCode(room);
+        bRoom.setBookingConfCode(confCode);
+        int totalNumOfGuests= request.getNumOfAdults()+ request.getNumOfChildren();
+        bRoom.setTotalGuests(totalNumOfGuests);
+        broomrepository.save(bRoom);
+        return bRoom;
 	}
 
 	@Override
