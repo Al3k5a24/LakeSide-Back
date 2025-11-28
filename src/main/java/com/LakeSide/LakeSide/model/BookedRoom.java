@@ -48,7 +48,6 @@ public class BookedRoom {
 
     public BookedRoom(Long bookingId, LocalDate checkInDate, LocalDate checkOutDate, String guestFullName,
             String guestEmail, int numOfAdults, int numOfChildren, int totalGuests, String bookingConfCode, Room room) {
-        this.bookingId = bookingId;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.guestFullName = guestFullName;
@@ -59,8 +58,6 @@ public class BookedRoom {
         this.bookingConfCode = bookingConfCode;
         this.room = room;
     }
-    
-    
 
 	public BookedRoom() {
 		super();

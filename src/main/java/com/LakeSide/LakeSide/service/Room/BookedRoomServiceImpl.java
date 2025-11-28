@@ -15,7 +15,9 @@ import javax.sql.rowset.serial.SerialBlob;
 import com.LakeSide.LakeSide.Exception.RoomIsBookedException;
 import com.LakeSide.LakeSide.model.UserAccount;
 import com.LakeSide.LakeSide.requests.BookRoomRBody;
+import com.LakeSide.LakeSide.response.bookedRoomResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -36,7 +38,6 @@ public class BookedRoomServiceImpl implements IBookedRoomService{
     @Autowired
     private IRoomService roomService;
 
-
     private String generateConfirmationCode(Room room) {
         //combine timestamp+ID+random = conf code
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
@@ -45,13 +46,25 @@ public class BookedRoomServiceImpl implements IBookedRoomService{
         return "BK"+timestamp+roomCode+random;
     }
 
+    private bookedRoomResponse getBookedRoomResponse(BookedRoom room){
+        return new bookedRoomResponse(
+                room.getGuestFullName(),
+                room.getGuestEmail(),
+                room.getCheckInDate(),
+                room.getCheckOutDate(),
+                room.getNumOfAdults(),
+                room.getNumOfChildren(),
+                room.getBookingConfCode()
+        );
+    }
+
 	@Override
 	@Transactional
-	public BookedRoom bookRoom(Long roomID, BookRoomRBody request, UserAccount user) {
+	public bookedRoomResponse bookRoom(Long roomID, BookRoomRBody request, UserAccount user) {
         Room room = roomService.getRoomInfoById(roomID);
         BookedRoom bRoom = new BookedRoom();
         if(room.isBooked()){
-            throw  new RoomIsBookedException("Room has been already booked!");
+            throw new RoomIsBookedException("Room has been already booked!");
         }
         bRoom.setGuestFullName(user.getEmail());
         bRoom.setGuestEmail(user.getEmail());
@@ -59,12 +72,15 @@ public class BookedRoomServiceImpl implements IBookedRoomService{
         bRoom.setCheckOutDate(request.getCheckOutDate());
         bRoom.setNumOfAdults(request.getNumOfAdults());
         bRoom.setNumOfChildren(request.getNumOfChildren());
+        bRoom.setRoom(room);
+        room.setBooked(true);
         String confCode=generateConfirmationCode(room);
         bRoom.setBookingConfCode(confCode);
         int totalNumOfGuests= request.getNumOfAdults()+ request.getNumOfChildren();
         bRoom.setTotalGuests(totalNumOfGuests);
         broomrepository.save(bRoom);
-        return bRoom;
+        bookedRoomResponse response = getBookedRoomResponse(bRoom);
+        return response;
 	}
 
 	@Override

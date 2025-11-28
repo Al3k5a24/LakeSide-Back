@@ -35,7 +35,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/sign-in", "/sign-up", "/register").permitAll()
-                    .requestMatchers("/browse-rooms/booking/**").authenticated()
+                    .requestMatchers("/browse-rooms/*").authenticated()
                 .anyRequest().authenticated()
             );
         return http.build();

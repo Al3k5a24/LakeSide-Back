@@ -144,14 +144,15 @@ public class RoomController {
 			}).orElseThrow(() -> new ResourceNotFoundException("Room not found"));
 	}
 
+    //modelattribute added for room picture
 	@PostMapping(value="/browse-rooms/booking/{roomId}")
 	@Transactional
 	public ResponseEntity<bookedRoomResponse> bookARoom(
             @PathVariable Long roomId,
-            @RequestBody BookRoomRBody body,
+            @RequestBody @ModelAttribute BookRoomRBody body,
             @AuthenticationPrincipal UserAccount user) throws IOException, SQLException{
-        //
-	return null;
+        bookedRoomResponse response = broomService.bookRoom(roomId,body,user);
+	return ResponseEntity.ok(response);
 	}
 
 }

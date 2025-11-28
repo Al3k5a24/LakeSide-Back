@@ -2,6 +2,7 @@ package com.LakeSide.LakeSide.response;
 
 import java.time.LocalDate;
 
+import com.LakeSide.LakeSide.model.Room;
 import lombok.Data;
 
 //Response DTO
@@ -49,18 +50,23 @@ public class bookedRoomResponse {
         this.room = room;
     }
     
-    public bookedRoomResponse(LocalDate checkInDate, LocalDate checkOutDate, String guestFullName,
-            String guestEmail, int numOfAdults, int numOfChildren,int to, roomResponse room) {
+    public bookedRoomResponse( String guestFullName,
+                               String guestEmail,
+                               LocalDate checkInDate,
+                               LocalDate checkOutDate,
+                               int numOfAdults,
+                               int numOfChildren,
+                               String bookingConfCode) {
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.guestFullName = guestFullName;
         this.guestEmail = guestEmail;
-        NumOfAdults = numOfAdults;
-        NumOfChildren = numOfChildren;
-        this.room = room;
+        this.NumOfAdults = numOfAdults;
+        this.NumOfChildren = numOfChildren;
+        this.bookingConfCode=bookingConfCode;
     }
 
-	public Long getBookingId() {
+    public Long getBookingId() {
 		return bookingId;
 	}
 
