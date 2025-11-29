@@ -73,11 +73,11 @@ public class BookedRoomServiceImpl implements IBookedRoomService{
         bRoom.setNumOfAdults(request.getNumOfAdults());
         bRoom.setNumOfChildren(request.getNumOfChildren());
         bRoom.setRoom(room);
-        room.setBooked(true);
         String confCode=generateConfirmationCode(room);
         bRoom.setBookingConfCode(confCode);
         int totalNumOfGuests= request.getNumOfAdults()+ request.getNumOfChildren();
         bRoom.setTotalGuests(totalNumOfGuests);
+        room.setBooked(true);
         broomrepository.save(bRoom);
         bookedRoomResponse response = getBookedRoomResponse(bRoom);
         return response;

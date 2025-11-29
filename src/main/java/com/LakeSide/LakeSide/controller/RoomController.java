@@ -55,14 +55,8 @@ public class RoomController {
 			@RequestParam("photo") MultipartFile photo,
 			@RequestParam("roomType") String roomType,
 			@RequestParam("roomPrice") BigDecimal roomPrice) throws SerialException, SQLException{
-		Room savedRoom=roomService.addNewRoom(photo,roomType,roomPrice);
-		
-		//convert to response entity
-		roomResponse response=new roomResponse(savedRoom.getId(), 
-				savedRoom.getRoomType(), 
-				savedRoom.getRoomPrice());
-		
-		return ResponseEntity.ok(response);
+		roomResponse savedRoom=roomService.addNewRoom(photo,roomType,roomPrice);
+		return ResponseEntity.ok(savedRoom);
 		
 	}
 

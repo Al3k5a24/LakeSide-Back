@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 
+import com.LakeSide.LakeSide.response.roomResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class RoomServiceImpl implements IRoomService{
         this.roomRepository = roomRepository;
 	}
 
-	public Room addNewRoom(MultipartFile photo, String roomType, BigDecimal roomPrice) throws SerialException, SQLException {
+	public roomResponse addNewRoom(MultipartFile photo, String roomType, BigDecimal roomPrice) throws SerialException, SQLException {
 		Room room=new Room();
 		room.setRoomType(roomType);
 		room.setRoomPrice(roomPrice);
@@ -54,7 +55,13 @@ public class RoomServiceImpl implements IRoomService{
 			} catch (IOException e) {
 				e.printStackTrace();}
 	}
-		return roomRepository.save(room);
+        //convert to response entity
+        roomResponse response=new roomResponse(
+                room.getId(),
+                room.getRoomType(),
+                room.getRoomPrice());
+		roomRepository.save(room);
+        return response;
 	}
 
 	@Override

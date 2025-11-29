@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import javax.sql.rowset.serial.SerialException;
 
+import com.LakeSide.LakeSide.response.roomResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +15,7 @@ import com.LakeSide.LakeSide.model.Room;
 
 public interface IRoomService {
 
-	Room addNewRoom(MultipartFile photo, String roomType, BigDecimal roomPrice) throws SerialException, SQLException;
+    roomResponse addNewRoom(MultipartFile photo, String roomType, BigDecimal roomPrice) throws SerialException, SQLException;
 
 	List<String> getAllRoomTypes();
 
