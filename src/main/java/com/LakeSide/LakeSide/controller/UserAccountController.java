@@ -72,10 +72,9 @@ public class UserAccountController {
 			return ResponseEntity.status(401).body("Authentication failed: " + e.getMessage());
 		}
 	}
-	
-	//get user profile after successfully logged in by taking claims from cookie
+
 	@GetMapping("/profile")
-	public ResponseEntity<Object> returnUserAfterLog(
+	public ResponseEntity<Object> returnUserProfileAfterLog(
 			@CookieValue(name="AUTH_TOKEN", required = false)
 			String token) {
 		//bcs of jwt filter, we can implement reading like this

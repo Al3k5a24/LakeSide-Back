@@ -18,6 +18,8 @@ import javax.sql.rowset.serial.SerialException;
 import JWT.JWTService;
 import com.LakeSide.LakeSide.model.UserAccount;
 import com.LakeSide.LakeSide.requests.BookRoomRBody;
+import com.LakeSide.LakeSide.service.IUserAccountService;
+import org.apache.catalina.User;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,7 +42,7 @@ import jakarta.transaction.Transactional;
 
 @RequestMapping("/rooms")
 //CORS policy override for diffrent paths 
-@CrossOrigin(origins="*")
+@CrossOrigin(origins="http://localhost:5173",allowCredentials = "true")
 @RestController
 public class RoomController {
 
@@ -49,6 +51,12 @@ public class RoomController {
 
     @Autowired
     private IBookedRoomService broomService;
+
+    @Autowired
+    private JWTService jwtService;
+
+    @Autowired
+    private IUserAccountService userService;
 
 	@PostMapping("/add/new-room")
 	public ResponseEntity<roomResponse> addNewRoom(
@@ -144,8 +152,11 @@ public class RoomController {
 	public ResponseEntity<bookedRoomResponse> bookARoom(
             @PathVariable Long roomId,
             @RequestBody @ModelAttribute BookRoomRBody body,
-            @AuthenticationPrincipal UserAccount user) throws IOException, SQLException{
-        bookedRoomResponse response = broomService.bookRoom(roomId,body,user);
+            @CookieValue(name="AUTH_TOKEN", required = false)
+            String token) throws IOException, SQLException{
+        String email = jwtService.extractEmail(token);
+        UserAccount loggedUser = userService.loadUserbyEmail(email);
+        bookedRoomResponse response = broomService.bookRoom(roomId,body,loggedUser);
 	return ResponseEntity.ok(response);
 	}
 

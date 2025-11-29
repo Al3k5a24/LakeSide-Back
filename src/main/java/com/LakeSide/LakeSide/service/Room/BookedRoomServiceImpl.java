@@ -66,7 +66,7 @@ public class BookedRoomServiceImpl implements IBookedRoomService{
         if(room.isBooked()){
             throw new RoomIsBookedException("Room has been already booked!");
         }
-        bRoom.setGuestFullName(user.getEmail());
+        bRoom.setGuestFullName(user.getFullName());
         bRoom.setGuestEmail(user.getEmail());
         bRoom.setCheckInDate(request.getCheckInDate());
         bRoom.setCheckOutDate(request.getCheckOutDate());
