@@ -4,9 +4,14 @@ import com.LakeSide.LakeSide.model.RoomBookings;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface RoomBookingHistoryRepository extends JpaRepository<RoomBookings,Long> {
     @Override
     public <S extends RoomBookings> S save(S entity);
+
+    List<RoomBookings> findBookingsByUserId(Long userID);
 }
 

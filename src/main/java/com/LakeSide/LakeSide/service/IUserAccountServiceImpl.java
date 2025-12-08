@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +17,7 @@ import com.LakeSide.LakeSide.model.UserAccount.Role;
 import com.LakeSide.LakeSide.repository.UserAccountRepository;
 import com.LakeSide.LakeSide.response.userAccountResponse;
 
-import JWT.JWTService;
+import com.LakeSide.LakeSide.JWT.JWTService;
 
 @Service
 public class IUserAccountServiceImpl implements IUserAccountService{

@@ -4,16 +4,19 @@ import com.LakeSide.LakeSide.model.BookedRoom;
 import com.LakeSide.LakeSide.model.RoomBookings;
 import com.LakeSide.LakeSide.model.UserAccount;
 import com.LakeSide.LakeSide.repository.RoomBookingHistoryRepository;
+import jakarta.persistence.Lob;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class RoomBookingsHistoryServiceImpl implements RoomBookingHistoryService {
 
     @Autowired
-    private RoomBookingHistoryRepository rHistoryRepo;
+    private RoomBookingHistoryRepository roomBookingHistoryRepository;
 
     @Override
     public RoomBookings saveBookingHistory(BookedRoom broom, UserAccount user) {
@@ -39,7 +42,15 @@ public class RoomBookingsHistoryServiceImpl implements RoomBookingHistoryService
 
         roomHistory.setCreatedAt(LocalDateTime.now());
 
-        rHistoryRepo.save(roomHistory);
+        roomBookingHistoryRepository.save(roomHistory);
         return roomHistory;
+    }
+
+    @Override
+    @Lob
+    @Transactional
+    public List<RoomBookings> getAllBookingsByUser(UserAccount user) {
+        List<RoomBookings> listOfBookedRooms = roomBookingHistoryRepository.findBookingsByUserId(user.getId());
+        return listOfBookedRooms;
     }
 }

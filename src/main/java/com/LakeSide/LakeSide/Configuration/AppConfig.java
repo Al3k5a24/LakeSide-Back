@@ -1,4 +1,4 @@
-package Configuration;
+package com.LakeSide.LakeSide.Configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;

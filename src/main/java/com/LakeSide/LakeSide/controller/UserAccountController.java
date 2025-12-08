@@ -2,7 +2,6 @@ package com.LakeSide.LakeSide.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
@@ -19,9 +18,8 @@ import com.LakeSide.LakeSide.response.userAccountLogInResponse;
 import com.LakeSide.LakeSide.response.userAccountResponse;
 import com.LakeSide.LakeSide.service.IUserAccountService;
 
-import Configuration.AppConfig;
-import JWT.JWTService;
-import jakarta.servlet.http.Cookie;
+import com.LakeSide.LakeSide.Configuration.AppConfig;
+import com.LakeSide.LakeSide.JWT.JWTService;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RequestMapping("/auth")

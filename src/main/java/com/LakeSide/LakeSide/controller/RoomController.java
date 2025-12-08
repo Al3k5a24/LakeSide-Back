@@ -4,34 +4,26 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 
-import JWT.JWTService;
+import com.LakeSide.LakeSide.JWT.JWTService;
 import com.LakeSide.LakeSide.model.UserAccount;
 import com.LakeSide.LakeSide.requests.BookRoomRBody;
 import com.LakeSide.LakeSide.service.IUserAccountService;
-import org.apache.catalina.User;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticatedPrincipal;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.LakeSide.LakeSide.Exception.PhotoRetrievalException;
 import com.LakeSide.LakeSide.Exception.ResourceNotFoundException;
-import com.LakeSide.LakeSide.model.BookedRoom;
 import com.LakeSide.LakeSide.model.Room;
 import com.LakeSide.LakeSide.response.bookedRoomResponse;
 import com.LakeSide.LakeSide.response.roomResponse;

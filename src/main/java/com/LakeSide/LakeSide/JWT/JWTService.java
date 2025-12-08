@@ -1,4 +1,4 @@
-package JWT;
+package com.LakeSide.LakeSide.JWT;
 
 import java.security.Key;
 import java.util.Date;
