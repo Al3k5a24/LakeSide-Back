@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RoomBookingRepository extends JpaRepository<RoomBookings,Long> {
+public interface RoomBookingHistoryRepository extends JpaRepository<RoomBookings,Long> {
     @Override
     public <S extends RoomBookings> S save(S entity);
 }

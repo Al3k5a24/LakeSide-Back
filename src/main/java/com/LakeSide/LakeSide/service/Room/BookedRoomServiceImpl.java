@@ -16,6 +16,7 @@ import com.LakeSide.LakeSide.Exception.RoomIsBookedException;
 import com.LakeSide.LakeSide.model.UserAccount;
 import com.LakeSide.LakeSide.requests.BookRoomRBody;
 import com.LakeSide.LakeSide.response.bookedRoomResponse;
+import com.LakeSide.LakeSide.service.RoomBookingsHistory.RoomBookingHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,9 @@ public class BookedRoomServiceImpl implements IBookedRoomService{
 
     @Autowired
     private IRoomService roomService;
+
+    @Autowired
+    private RoomBookingHistoryService rHistoryService;
 
     private String generateConfirmationCode(Room room) {
         //combine timestamp+ID+random = conf code
@@ -66,6 +70,7 @@ public class BookedRoomServiceImpl implements IBookedRoomService{
         if(room.isBooked()){
             throw new RoomIsBookedException("Room has been already booked!");
         }
+
         bRoom.setGuestFullName(user.getFullName());
         bRoom.setGuestEmail(user.getEmail());
         bRoom.setCheckInDate(request.getCheckInDate());
@@ -73,12 +78,18 @@ public class BookedRoomServiceImpl implements IBookedRoomService{
         bRoom.setNumOfAdults(request.getNumOfAdults());
         bRoom.setNumOfChildren(request.getNumOfChildren());
         bRoom.setRoom(room);
+
         String confCode=generateConfirmationCode(room);
         bRoom.setBookingConfCode(confCode);
+
         int totalNumOfGuests= request.getNumOfAdults()+ request.getNumOfChildren();
         bRoom.setTotalGuests(totalNumOfGuests);
+
         room.setBooked(true);
         broomrepository.save(bRoom);
+
+        rHistoryService.saveBookingHistory(bRoom,user);
+
         bookedRoomResponse response = getBookedRoomResponse(bRoom);
         return response;
 	}

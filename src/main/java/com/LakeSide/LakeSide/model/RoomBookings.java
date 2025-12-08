@@ -17,8 +17,8 @@ public class RoomBookings {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
+    @JoinColumn(name = "booking_id", nullable = false)
+    private BookedRoom room;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -73,7 +73,7 @@ public class RoomBookings {
         return id;
     }
 
-    public Room getRoom() {
+    public BookedRoom getRoom() {
         return room;
     }
 
@@ -133,7 +133,7 @@ public class RoomBookings {
         this.id = id;
     }
 
-    public void setRoom(Room room) {
+    public void setRoom(BookedRoom room) {
         this.room = room;
     }
 
@@ -175,6 +175,10 @@ public class RoomBookings {
 
     public void setStatus(BookingStatus status) {
         this.status = status;
+    }
+
+    public void setStatusConfirmed() {
+        this.status = BookingStatus.CONFIRMED;
     }
 
     public void setTotalPrice(BigDecimal totalPrice) {
