@@ -4,8 +4,10 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -23,15 +25,15 @@ public class SecurityConfig {
     }
 	 
 	//add cookies to web site
+    @Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/sign-in", "/sign-up", "/register").permitAll()
-                    .requestMatchers("/browse-rooms/*").permitAll()
+                    .requestMatchers("/rooms/all-rooms", "/rooms/room-types", "rooms/room/{roomId}").permitAll()
                 .anyRequest().authenticated()
-            );
+            ).cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 

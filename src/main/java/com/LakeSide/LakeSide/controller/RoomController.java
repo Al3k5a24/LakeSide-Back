@@ -50,6 +50,7 @@ public class RoomController {
     @Autowired
     private IUserAccountService userService;
 
+    //needs auth
 	@PostMapping("/add/new-room")
 	public ResponseEntity<roomResponse> addNewRoom(
 			@RequestParam("photo") MultipartFile photo,
@@ -86,6 +87,7 @@ public class RoomController {
 		return ResponseEntity.ok(roomResponse);
 	}
 
+    //needs auth
 	@DeleteMapping("/delete/room/{roomId}")
 	public ResponseEntity<Void> deleteRoom(@PathVariable("roomId") Long roomId){
 		roomService.deleteRoom(roomId);
@@ -111,6 +113,7 @@ public class RoomController {
 				room.isBooked(),photoByte);
 	}
 
+    //needs auth
 	@PutMapping(value="/update/room/{roomId}")
 	public ResponseEntity<roomResponse> updateRoom(@PathVariable Long roomId,
 			@RequestParam(required=false) String roomType,
@@ -139,6 +142,7 @@ public class RoomController {
 	}
 
     //modelattribute added for room picture
+    //needs auth
 	@PostMapping(value="/browse-rooms/booking/{roomId}")
 	@Transactional
 	public ResponseEntity<bookedRoomResponse> bookARoom(
@@ -151,5 +155,4 @@ public class RoomController {
         bookedRoomResponse response = broomService.bookRoom(roomId,body,loggedUser);
 	return ResponseEntity.ok(response);
 	}
-
 }
