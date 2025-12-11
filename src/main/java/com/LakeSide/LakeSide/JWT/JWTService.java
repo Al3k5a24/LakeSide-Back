@@ -69,22 +69,24 @@ public class JWTService {
         cookieToDelete.setPath("/");
         cookieToDelete.setMaxAge(0);
         cookieToDelete.setHttpOnly(true);
-        cookieToDelete.setSecure(true);
+        cookieToDelete.setSecure(false); // false za localhost development
+        cookieToDelete.setAttribute("SameSite", "Lax");
         response.addCookie(cookieToDelete);
     }
 
     public void generateCookie(HttpServletResponse response, String token){
         Cookie cookie = new Cookie(cookieName, token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false); // false za localhost development (HTTP), true za production (HTTPS)
         cookie.setPath("/");
         cookie.setMaxAge(cookieExpiration); //7 days
+        cookie.setAttribute("SameSite", "Lax"); // Potrebno za moderne browsere u cross-origin scenarijima
         response.addCookie(cookie);
     }
 
-	public Boolean isTokenValid(String token, UserAccount userDetails) {
+	public Boolean isTokenValid(String token, UserDetails userDetails) {
 		final String email = extractEmail(token);
-		return (email != null && email.equals(userDetails.getEmail()) && !isTokenExpired(token));
+		return (email != null && email.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 
 	private boolean isTokenExpired(String token) {

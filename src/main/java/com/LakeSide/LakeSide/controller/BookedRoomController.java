@@ -17,7 +17,6 @@ import java.util.List;
 @RequestMapping("/my-bookings")
 //CORS policy override for diffrent paths 
 @CrossOrigin(origins="*")
-@ComponentScan(basePackages = {"com.LakeSide.LakeSide", "com/LakeSide/LakeSide/JWT"})
 @RestController
 public class BookedRoomController {
 

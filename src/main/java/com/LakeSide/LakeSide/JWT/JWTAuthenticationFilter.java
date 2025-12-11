@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,6 +30,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
 	
 	@Autowired
 	private IUserAccountService userService;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 	
 	@Override
 	protected void doFilterInternal(
@@ -36,27 +41,41 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
 			@NotNull FilterChain filterChain)
 			throws ServletException, IOException {
 		try {
-			//JWT token header
+			//JWT token can come from Authorization header OR from AUTH_TOKEN cookie
 			final String authHeader = request.getHeader("Authorization"); 
-			final String jwt;
+			String jwt = null;
 
 			//data from user request that will be extracted from fields in order to check if user is in our database
 			final String userEmail;
 			
-			//early check JWT token
-			if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+			// First, try to get token from Authorization header
+			if(authHeader != null && authHeader.startsWith("Bearer ")) {
+				//start from position 7 because Bearer with 1 space has 7 positions(letters)
+				jwt = authHeader.substring(7);
+			} else {
+				// If no Authorization header, try to get token from cookie
+				jakarta.servlet.http.Cookie[] cookies = request.getCookies();
+				if(cookies != null) {
+					for(jakarta.servlet.http.Cookie cookie : cookies) {
+						if("AUTH_TOKEN".equals(cookie.getName())) {
+							jwt = cookie.getValue();
+							break;
+						}
+					}
+				}
+			}
+			
+			// If no token found in header or cookie, continue filter chain
+			if(jwt == null || jwt.isEmpty()) {
 				filterChain.doFilter(request, response);
 				return;
 			}
 			
-			//start from position 7 because Bearer with 1 space has 7 positions(letters)
-			//that is not important for us, only what comes next
-			jwt = authHeader.substring(7);
 			userEmail = jwtService.extractEmail(jwt);
 			
 			//check if userEmail is not null and the user has not been authenticated already(not connected)
 			if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-				UserAccount userDetails = this.userService.loadUserbyEmail(userEmail);
+				UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 				
 				//check if userDetails exists and token is valid
 				if(userDetails != null && jwtService.isTokenValid(jwt, userDetails)) {
