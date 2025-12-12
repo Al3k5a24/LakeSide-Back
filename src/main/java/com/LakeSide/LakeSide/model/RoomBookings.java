@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -15,10 +16,6 @@ public class RoomBookings {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "booking_id", nullable = false)
-    private BookedRoom bookedRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -62,6 +59,13 @@ public class RoomBookings {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Column
+    private String BookedRoomType;
+
+    @Lob
+    @Column(length=1000)
+    private Blob BookedRoomPhoto;
+
     enum BookingStatus {
         CONFIRMED,
         CANCELLED,
@@ -73,8 +77,20 @@ public class RoomBookings {
         return id;
     }
 
-    public BookedRoom getBookedRoom() {
-        return bookedRoom;
+    public Blob getBookedRoomPhoto() {
+        return BookedRoomPhoto;
+    }
+
+    public void setBookedRoomPhoto(Blob bookedRoomPhoto) {
+        BookedRoomPhoto = bookedRoomPhoto;
+    }
+
+    public String getBookedRoomType() {
+        return BookedRoomType;
+    }
+
+    public void setBookedRoomType(String bookedRoomType) {
+        this.BookedRoomType = bookedRoomType;
     }
 
     public UserAccount getUser() {
@@ -131,10 +147,6 @@ public class RoomBookings {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setBookedRoom(BookedRoom bookedRoom) {
-        this.bookedRoom = bookedRoom;
     }
 
     public void setUser(UserAccount user) {

@@ -3,14 +3,13 @@ package com.LakeSide.LakeSide.response;
 import com.LakeSide.LakeSide.model.Room;
 import com.LakeSide.LakeSide.model.UserAccount;
 import jakarta.persistence.*;
+import org.apache.tomcat.util.codec.binary.Base64;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class roomBookingsResponse {
     private Long id;
-
-    private Room room;
 
     private UserAccount user;
 
@@ -32,20 +31,41 @@ public class roomBookingsResponse {
 
     private BigDecimal totalPrice;
 
+    private String BookedRoomType;
+
+    private String photo;
+
+    public roomBookingsResponse(UserAccount user, Long id, String guestFullName, String guestEmail,
+                                LocalDate checkInDate, LocalDate checkOutDate, int totalNumOfGuests,
+                                String bookingConfirmationCode, String bookedRoomType, BigDecimal totalPrice,
+                                byte[] photoByte) {
+        this.user = user;
+        this.id = id;
+        this.guestFullName = guestFullName;
+        this.guestEmail = guestEmail;
+        this.checkInDate = checkInDate;
+        this.checkOutDate = checkOutDate;
+        this.totalNumOfGuests = totalNumOfGuests;
+        this.bookingConfirmationCode = bookingConfirmationCode;
+        BookedRoomType = bookedRoomType;
+        this.totalPrice = totalPrice;
+        this.photo = photoByte != null ? Base64.encodeBase64String(photoByte) : null;
+    }
+
+    public String getBookedRoomType() {
+        return BookedRoomType;
+    }
+
+    public void setBookedRoomType(String bookedRoomType) {
+        BookedRoomType = bookedRoomType;
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Room getRoom() {
-        return room;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
     }
 
     public UserAccount getUser() {

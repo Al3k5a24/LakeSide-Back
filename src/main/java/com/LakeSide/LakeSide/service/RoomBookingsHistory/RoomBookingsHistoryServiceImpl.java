@@ -27,7 +27,6 @@ public class RoomBookingsHistoryServiceImpl implements RoomBookingHistoryService
         roomHistory.setGuestFullName(user.getFullName());
         roomHistory.setGuestEmail(user.getEmail());
 
-        roomHistory.setBookedRoom(broom);
         roomHistory.setCheckInDate(broom.getCheckInDate());
         roomHistory.setCheckOutDate(broom.getCheckOutDate());
 
@@ -43,14 +42,18 @@ public class RoomBookingsHistoryServiceImpl implements RoomBookingHistoryService
 
         roomHistory.setCreatedAt(LocalDateTime.now());
 
+        roomHistory.setBookedRoomPhoto(broom.getRoom().getPhoto());
+
+        roomHistory.setBookedRoomType(broom.getRoom().getRoomType());
+
         roomBookingHistoryRepository.save(roomHistory);
         return roomHistory;
     }
 
     @Override
     @Transactional
-    public List<bookedRoomResponse> getAllBookingsByUser(UserAccount user) {
-        List<bookedRoomResponse> listOfBookedRooms = roomBookingHistoryRepository.findBookingsByUserId(user.getId());
+    public List<RoomBookings> getAllBookingsByUser(UserAccount user) {
+        List<RoomBookings> listOfBookedRooms = roomBookingHistoryRepository.findBookingsByUserId(user.getId());
         return listOfBookedRooms;
     }
 }

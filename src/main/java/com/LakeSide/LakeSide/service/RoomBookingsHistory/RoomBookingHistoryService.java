@@ -12,5 +12,5 @@ public interface RoomBookingHistoryService {
 
     public RoomBookings saveBookingHistory (BookedRoom broom, UserAccount user);
 
-    List<bookedRoomResponse> getAllBookingsByUser(UserAccount user);
+    List<RoomBookings> getAllBookingsByUser(UserAccount user);
 }

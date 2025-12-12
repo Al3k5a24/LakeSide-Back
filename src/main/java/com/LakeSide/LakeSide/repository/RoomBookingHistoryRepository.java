@@ -13,6 +13,6 @@ public interface RoomBookingHistoryRepository extends JpaRepository<RoomBookings
     @Override
     public <S extends RoomBookings> S save(S entity);
 
-    List<bookedRoomResponse> findBookingsByUserId(Long userID);
+    List<RoomBookings> findBookingsByUserId(Long userID);
 }
 
