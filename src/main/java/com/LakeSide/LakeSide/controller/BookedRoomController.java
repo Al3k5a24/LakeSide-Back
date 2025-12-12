@@ -8,7 +8,6 @@ import com.LakeSide.LakeSide.service.RoomBookingsHistory.RoomBookingHistoryServi
 import jakarta.persistence.Lob;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +15,9 @@ import java.util.List;
 
 @RequestMapping("/my-bookings")
 //CORS policy override for diffrent paths 
-@CrossOrigin(origins="*")
+@CrossOrigin(origins="http://localhost:5173",allowCredentials = "true")
 @RestController
 public class BookedRoomController {
-
-    @Autowired
-    private JWTService jwtService;
 
     @Autowired
     private IUserAccountService userService;
@@ -29,18 +25,18 @@ public class BookedRoomController {
     @Autowired
     private RoomBookingHistoryService bookingHistoryService;
 
-    public BookedRoomController(JWTService jwtService) {
-        this.jwtService = jwtService;
-    }
+    @Autowired
+    private JWTService jwtService;
 
     @GetMapping("/all-booked-Rooms")
-    @Lob
     @Transactional
-    private ResponseEntity<Object> returnBookedRooms(
+    public ResponseEntity<Object> returnBookedRooms(
             @CookieValue(name="AUTH_TOKEN", required = false) String token){
         String userEmail=jwtService.extractEmail(token);
         UserAccount loggedUser = userService.loadUserbyEmail(userEmail);
+        System.out.println(loggedUser);
         List<RoomBookings> bookingHistoryList = bookingHistoryService.getAllBookingsByUser(loggedUser);
+
         return ResponseEntity.ok(bookingHistoryList);
     }
 }

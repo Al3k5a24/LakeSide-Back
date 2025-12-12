@@ -40,6 +40,7 @@ public class SecurityConfig {
                     .requestMatchers("/rooms/all-rooms", "/rooms/room-types", "/rooms/room/{roomId}").permitAll()
                     .requestMatchers("/auth/**").permitAll()
                     .requestMatchers("/rooms/browse-rooms/booking/{roomId}").authenticated()
+                    .requestMatchers("/my-bookings/all-booked-Rooms").authenticated()
                     .anyRequest().authenticated()
             ).cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)

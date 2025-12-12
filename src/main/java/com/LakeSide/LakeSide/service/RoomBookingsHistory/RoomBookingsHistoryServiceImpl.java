@@ -4,7 +4,7 @@ import com.LakeSide.LakeSide.model.BookedRoom;
 import com.LakeSide.LakeSide.model.RoomBookings;
 import com.LakeSide.LakeSide.model.UserAccount;
 import com.LakeSide.LakeSide.repository.RoomBookingHistoryRepository;
-import jakarta.persistence.Lob;
+import com.LakeSide.LakeSide.response.bookedRoomResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,7 @@ public class RoomBookingsHistoryServiceImpl implements RoomBookingHistoryService
     private RoomBookingHistoryRepository roomBookingHistoryRepository;
 
     @Override
+    @Transactional
     public RoomBookings saveBookingHistory(BookedRoom broom, UserAccount user) {
         RoomBookings roomHistory = new RoomBookings();
 
@@ -26,7 +27,7 @@ public class RoomBookingsHistoryServiceImpl implements RoomBookingHistoryService
         roomHistory.setGuestFullName(user.getFullName());
         roomHistory.setGuestEmail(user.getEmail());
 
-        roomHistory.setRoom(broom);
+        roomHistory.setBookedRoom(broom);
         roomHistory.setCheckInDate(broom.getCheckInDate());
         roomHistory.setCheckOutDate(broom.getCheckOutDate());
 
@@ -47,10 +48,9 @@ public class RoomBookingsHistoryServiceImpl implements RoomBookingHistoryService
     }
 
     @Override
-    @Lob
     @Transactional
-    public List<RoomBookings> getAllBookingsByUser(UserAccount user) {
-        List<RoomBookings> listOfBookedRooms = roomBookingHistoryRepository.findBookingsByUserId(user.getId());
+    public List<bookedRoomResponse> getAllBookingsByUser(UserAccount user) {
+        List<bookedRoomResponse> listOfBookedRooms = roomBookingHistoryRepository.findBookingsByUserId(user.getId());
         return listOfBookedRooms;
     }
 }

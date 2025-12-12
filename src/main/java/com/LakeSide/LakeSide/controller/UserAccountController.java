@@ -28,10 +28,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @RestController
 public class UserAccountController {
 	
-	//added for http-only cookie(jwt storage)
-	@Autowired
-	private AppConfig properties;
-	
 	@Autowired
     private JWTService jwtService;
 

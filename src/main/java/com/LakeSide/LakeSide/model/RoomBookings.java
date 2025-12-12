@@ -16,9 +16,9 @@ public class RoomBookings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "booking_id", nullable = false)
-    private BookedRoom room;
+    private BookedRoom bookedRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -73,8 +73,8 @@ public class RoomBookings {
         return id;
     }
 
-    public BookedRoom getRoom() {
-        return room;
+    public BookedRoom getBookedRoom() {
+        return bookedRoom;
     }
 
     public UserAccount getUser() {
@@ -133,8 +133,8 @@ public class RoomBookings {
         this.id = id;
     }
 
-    public void setRoom(BookedRoom room) {
-        this.room = room;
+    public void setBookedRoom(BookedRoom bookedRoom) {
+        this.bookedRoom = bookedRoom;
     }
 
     public void setUser(UserAccount user) {
