@@ -43,8 +43,6 @@ public class RoomBookingsHistoryServiceImpl implements RoomBookingHistoryService
 
         roomHistory.setCreatedAt(LocalDateTime.now());
 
-        roomHistory.setBookedRoomPhoto(broom.getRoom().getPhoto());
-
         roomHistory.setBookedRoomType(broom.getRoom().getRoomType());
 
         roomBookingHistoryRepository.save(roomHistory);
@@ -66,6 +64,7 @@ public class RoomBookingsHistoryServiceImpl implements RoomBookingHistoryService
     @Transactional
     private roomBookingsResponse getBookedRoomHistoryResponse(RoomBookings bookedRoom) {
         return new roomBookingsResponse(
+                bookedRoom.getId(),
                 bookedRoom.getGuestFullName(),
                 bookedRoom.getGuestEmail(),
                 bookedRoom.getCheckInDate(),

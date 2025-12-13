@@ -11,8 +11,6 @@ import java.time.LocalDate;
 public class roomBookingsResponse {
     private Long id;
 
-    private UserAccount user;
-
     private String guestFullName;
 
     private String guestEmail;
@@ -32,10 +30,11 @@ public class roomBookingsResponse {
     private BookingStatus status;
 
 
-    public roomBookingsResponse(String guestFullName, String guestEmail,
+    public roomBookingsResponse(Long id, String guestFullName, String guestEmail,
                                 LocalDate checkInDate, LocalDate checkOutDate, int totalNumOfGuests,
                                 String bookingConfirmationCode, String bookedRoomType, BigDecimal totalPrice,
                                 BookingStatus status) {
+        this.id=id;
         this.guestFullName = guestFullName;
         this.guestEmail = guestEmail;
         this.checkInDate = checkInDate;
@@ -61,14 +60,6 @@ public class roomBookingsResponse {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public UserAccount getUser() {
-        return user;
-    }
-
-    public void setUser(UserAccount user) {
-        this.user = user;
     }
 
     public String getGuestFullName() {

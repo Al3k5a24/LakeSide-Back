@@ -63,21 +63,8 @@ public class RoomBookings {
     @Column
     private String BookedRoomType;
 
-    @Lob
-    @Column(length=1000)
-    private Blob BookedRoomPhoto;
-
-
     public Long getId() {
         return id;
-    }
-
-    public Blob getBookedRoomPhoto() {
-        return BookedRoomPhoto;
-    }
-
-    public void setBookedRoomPhoto(Blob bookedRoomPhoto) {
-        BookedRoomPhoto = bookedRoomPhoto;
     }
 
     public String getBookedRoomType() {
