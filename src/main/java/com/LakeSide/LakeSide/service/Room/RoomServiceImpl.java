@@ -66,7 +66,7 @@ public class RoomServiceImpl implements IRoomService{
 
 	@Override
 	public List<String> getAllRoomTypes() {
-		return roomRepository.findDistinctRoomTypes();
+        return roomRepository.findDistinctRoomTypes();
 	}
 
 	@Override

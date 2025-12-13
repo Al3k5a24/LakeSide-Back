@@ -4,12 +4,13 @@ import com.LakeSide.LakeSide.model.BookedRoom;
 import com.LakeSide.LakeSide.model.RoomBookings;
 import com.LakeSide.LakeSide.model.UserAccount;
 import com.LakeSide.LakeSide.repository.RoomBookingHistoryRepository;
-import com.LakeSide.LakeSide.response.bookedRoomResponse;
+import com.LakeSide.LakeSide.response.roomBookingsResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,8 +53,27 @@ public class RoomBookingsHistoryServiceImpl implements RoomBookingHistoryService
 
     @Override
     @Transactional
-    public List<RoomBookings> getAllBookingsByUser(UserAccount user) {
+    public List<roomBookingsResponse> getAllBookingsByUser(UserAccount user) {
         List<RoomBookings> listOfBookedRooms = roomBookingHistoryRepository.findBookingsByUserId(user.getId());
-        return listOfBookedRooms;
+        List<roomBookingsResponse> bookedRoomsList = new ArrayList<>();
+        for(RoomBookings room:listOfBookedRooms) {
+            roomBookingsResponse rr= getBookedRoomHistoryResponse(room);
+            bookedRoomsList.add(rr);
+        }
+        return bookedRoomsList;
+    }
+
+    @Transactional
+    private roomBookingsResponse getBookedRoomHistoryResponse(RoomBookings bookedRoom) {
+        return new roomBookingsResponse(
+                bookedRoom.getGuestFullName(),
+                bookedRoom.getGuestEmail(),
+                bookedRoom.getCheckInDate(),
+                bookedRoom.getCheckOutDate(),
+                bookedRoom.getTotalNumOfGuests(),
+                bookedRoom.getBookingConfirmationCode(),
+                bookedRoom.getBookedRoomType(),
+                bookedRoom.getTotalPrice()
+        );
     }
 }

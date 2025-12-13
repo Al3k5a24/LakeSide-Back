@@ -1,9 +1,7 @@
 package com.LakeSide.LakeSide.response;
 
-import com.LakeSide.LakeSide.model.Room;
+import com.LakeSide.LakeSide.model.RoomBookings;
 import com.LakeSide.LakeSide.model.UserAccount;
-import jakarta.persistence.*;
-import org.apache.tomcat.util.codec.binary.Base64;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,10 +19,6 @@ public class roomBookingsResponse {
 
     private LocalDate checkOutDate;
 
-    private int numOfAdults;
-
-    private int numOfChildren;
-
     private int totalNumOfGuests;
 
     private String bookingConfirmationCode;
@@ -33,23 +27,18 @@ public class roomBookingsResponse {
 
     private String BookedRoomType;
 
-    private String photo;
 
-    public roomBookingsResponse(UserAccount user, Long id, String guestFullName, String guestEmail,
+    public roomBookingsResponse(String guestFullName, String guestEmail,
                                 LocalDate checkInDate, LocalDate checkOutDate, int totalNumOfGuests,
-                                String bookingConfirmationCode, String bookedRoomType, BigDecimal totalPrice,
-                                byte[] photoByte) {
-        this.user = user;
-        this.id = id;
+                                String bookingConfirmationCode, String bookedRoomType, BigDecimal totalPrice) {
         this.guestFullName = guestFullName;
         this.guestEmail = guestEmail;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.totalNumOfGuests = totalNumOfGuests;
         this.bookingConfirmationCode = bookingConfirmationCode;
-        BookedRoomType = bookedRoomType;
+        this.BookedRoomType = bookedRoomType;
         this.totalPrice = totalPrice;
-        this.photo = photoByte != null ? Base64.encodeBase64String(photoByte) : null;
     }
 
     public String getBookedRoomType() {
@@ -106,22 +95,6 @@ public class roomBookingsResponse {
 
     public void setCheckOutDate(LocalDate checkOutDate) {
         this.checkOutDate = checkOutDate;
-    }
-
-    public int getNumOfAdults() {
-        return numOfAdults;
-    }
-
-    public void setNumOfAdults(int numOfAdults) {
-        this.numOfAdults = numOfAdults;
-    }
-
-    public int getNumOfChildren() {
-        return numOfChildren;
-    }
-
-    public void setNumOfChildren(int numOfChildren) {
-        this.numOfChildren = numOfChildren;
     }
 
     public int getTotalNumOfGuests() {
