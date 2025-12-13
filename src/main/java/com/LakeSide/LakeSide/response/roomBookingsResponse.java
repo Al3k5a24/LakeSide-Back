@@ -1,8 +1,10 @@
 package com.LakeSide.LakeSide.response;
 
+import com.LakeSide.LakeSide.Enums.BookingStatus;
 import com.LakeSide.LakeSide.model.RoomBookings;
 import com.LakeSide.LakeSide.model.UserAccount;
 
+import java.awt.print.Book;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -27,10 +29,13 @@ public class roomBookingsResponse {
 
     private String BookedRoomType;
 
+    private BookingStatus status;
+
 
     public roomBookingsResponse(String guestFullName, String guestEmail,
                                 LocalDate checkInDate, LocalDate checkOutDate, int totalNumOfGuests,
-                                String bookingConfirmationCode, String bookedRoomType, BigDecimal totalPrice) {
+                                String bookingConfirmationCode, String bookedRoomType, BigDecimal totalPrice,
+                                BookingStatus status) {
         this.guestFullName = guestFullName;
         this.guestEmail = guestEmail;
         this.checkInDate = checkInDate;
@@ -39,6 +44,7 @@ public class roomBookingsResponse {
         this.bookingConfirmationCode = bookingConfirmationCode;
         this.BookedRoomType = bookedRoomType;
         this.totalPrice = totalPrice;
+        this.status=status;
     }
 
     public String getBookedRoomType() {
@@ -119,5 +125,13 @@ public class roomBookingsResponse {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public BookingStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BookingStatus status) {
+        this.status = status;
     }
 }

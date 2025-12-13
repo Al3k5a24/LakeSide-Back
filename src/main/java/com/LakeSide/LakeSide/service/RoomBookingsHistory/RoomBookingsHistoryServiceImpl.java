@@ -73,7 +73,8 @@ public class RoomBookingsHistoryServiceImpl implements RoomBookingHistoryService
                 bookedRoom.getTotalNumOfGuests(),
                 bookedRoom.getBookingConfirmationCode(),
                 bookedRoom.getBookedRoomType(),
-                bookedRoom.getTotalPrice()
+                bookedRoom.getTotalPrice(),
+                bookedRoom.getStatus()
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.LakeSide.LakeSide.model;
 
+import com.LakeSide.LakeSide.Enums.BookingStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -66,12 +67,6 @@ public class RoomBookings {
     @Column(length=1000)
     private Blob BookedRoomPhoto;
 
-    enum BookingStatus {
-        CONFIRMED,
-        CANCELLED,
-        COMPLETED,
-        NO_SHOW
-    }
 
     public Long getId() {
         return id;
