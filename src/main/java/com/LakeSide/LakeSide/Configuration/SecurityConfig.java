@@ -37,7 +37,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/sign-in", "/sign-up", "/register").permitAll()
-                    .requestMatchers("/rooms/all-rooms", "/rooms/room-types", "/rooms/room/{roomId}").permitAll()
+                    .requestMatchers("/rooms/all-rooms", "/rooms/room-types", "/rooms/room/{roomId}", "rooms/add/new-room").permitAll()
                     .requestMatchers("/auth/**").permitAll()
                     .requestMatchers("/rooms/browse-rooms/booking/{roomId}").authenticated()
                     .requestMatchers("/my-bookings/all-booked-Rooms").authenticated()
