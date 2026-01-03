@@ -10,6 +10,9 @@ import java.util.Optional;
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 
+    @Override
+    public <S extends RefreshToken> S save(S entity);
+
     Optional<RefreshToken> findByToken(String token);
     void deleteByEmail(String Email);
 }

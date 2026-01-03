@@ -24,12 +24,10 @@ public class RefreshToken {
     @Column(nullable = false)
     private boolean rekoved = false;
 
-    public RefreshToken(boolean rekoved, LocalDateTime expiryDate, String email, String token, Long id) {
-        this.rekoved = rekoved;
+    public RefreshToken( LocalDateTime expiryDate, String email, String token) {
         this.expiryDate = expiryDate;
         this.email = email;
         this.token = token;
-        this.id = id;
     }
 
     public Long getId() {

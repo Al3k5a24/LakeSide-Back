@@ -36,7 +36,7 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/sign-in", "/sign-up", "/register").permitAll()
+                .requestMatchers("/sign-in", "/sign-up", "/create-account").permitAll()
                     .requestMatchers("/rooms/all-rooms", "/rooms/room-types", "/rooms/room/{roomId}", "rooms/add/new-room").permitAll()
                     .requestMatchers("/auth/**").permitAll()
                     .requestMatchers("/rooms/browse-rooms/booking/{roomId}").authenticated()

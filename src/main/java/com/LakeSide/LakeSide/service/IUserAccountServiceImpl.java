@@ -1,11 +1,13 @@
 package com.LakeSide.LakeSide.service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 import com.LakeSide.LakeSide.model.RefreshToken;
+import com.LakeSide.LakeSide.repository.RefreshTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +39,7 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 	private JWTService jwtService;
 
     @Autowired
-	private RefreshToken refreshTokenRepository;
+	private RefreshTokenRepository refreshTokenRepository;
 	
 	@Override
 	public userAccountResponse createAccount(String fullName, String email, String password) {
@@ -67,14 +69,24 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		user.setEmail(email.trim().toLowerCase());
 		user.setPassword(passwordEncoder.encode(password));
 		user.setRole(Role.USER);
+
+        String RtokenString = jwtService.generateRefreshToken(user.getEmail());
+
+        RefreshToken refreshToken = new RefreshToken(
+                LocalDateTime.now().plusDays(7),
+                RtokenString,
+                user.getEmail());
+
+        refreshTokenRepository.save(refreshToken);
+
 		UserAccount savedUser = userRepository.save(user);
 
 		return new userAccountResponse(
 				savedUser.getId(),
 				savedUser.getFullName(),
-				savedUser.getEmail(),
-				null, // Never return password
-				savedUser.getRole().name()
+				savedUser.getEmail(),// Never return password
+				savedUser.getRole().name(),
+                savedUser.getToken()
 		);
 	}
 

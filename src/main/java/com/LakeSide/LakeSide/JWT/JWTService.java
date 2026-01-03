@@ -65,9 +65,9 @@ public class JWTService {
 	}
 
     public String generateRefreshToken(
-            UserDetails userDetails){
+            String email){
         return Jwts.builder()
-                .subject(userDetails.getUsername())
+                .subject(email)
                 .claim("type", "refresh")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis()+refreshTokenExpiration))
