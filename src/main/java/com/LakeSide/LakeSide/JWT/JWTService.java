@@ -56,6 +56,7 @@ public class JWTService {
 	    return Jwts.builder()
 	            .setClaims(extraClaims)
                 .claim("type","access")
+                //getUsername has been modified in UserAccount class and returns email
 	            .setSubject(userDetails.getUsername())
 	            .setIssuedAt(new Date(System.currentTimeMillis()))
 	            .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
