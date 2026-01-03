@@ -31,7 +31,7 @@ public class SecurityConfig {
     @Autowired
     private AuthenticationProvider authenticationProvider;
 	 
-	//add cookies to web site
+	//CSFR disabled for stateless JWT
     @Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

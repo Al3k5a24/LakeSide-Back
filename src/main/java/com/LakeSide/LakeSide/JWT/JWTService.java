@@ -6,17 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.crypto.SecretKey;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-
-import com.LakeSide.LakeSide.model.UserAccount;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -39,8 +33,12 @@ public class JWTService {
     //period in which token is valid - loaded from application.properties
 	@Value("${jwt.expiration}")
 	private long jwtExpiration;
+
+    @Value("${jwt.refresh-token.expiration}")
+    private long refreshTokenExpiration;
 	
 	public String extractEmail(String token) {
+
         return extractClaim(token, Claims::getSubject);
 	}
 
@@ -48,15 +46,16 @@ public class JWTService {
     private String cookieName = "AUTH_TOKEN";
 	
 	//basic jwt token, just for user creation
-	public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+	public String generateAccessToken(UserDetails userDetails) {
+        return generateAccessToken(new HashMap<>(), userDetails);
 	}
 
-	public String generateToken(
+	public String generateAccessToken(
 			Map<String, Object> extraClaims,
 			UserDetails userDetails) {
 	    return Jwts.builder()
 	            .setClaims(extraClaims)
+                .claim("type","access")
 	            .setSubject(userDetails.getUsername())
 	            .setIssuedAt(new Date(System.currentTimeMillis()))
 	            .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
@@ -64,15 +63,21 @@ public class JWTService {
 	            .compact();
 	}
 
-    public void deleteCookie(HttpServletResponse response){
-        Cookie cookieToDelete = new Cookie(cookieName,null);
-        cookieToDelete.setPath("/");
-        cookieToDelete.setMaxAge(0);
-        cookieToDelete.setHttpOnly(true);
-        cookieToDelete.setSecure(false); // false za localhost development
-        cookieToDelete.setAttribute("SameSite", "Lax");
-        response.addCookie(cookieToDelete);
+    public String generateRefreshToken(
+            UserDetails userDetails){
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .claim("type", "refresh")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis()+refreshTokenExpiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
+
+    public String extractTokenType(String token) {
+        return extractAllClaims(token).get("type", String.class);
+    }
+
 
     public void generateCookie(HttpServletResponse response, String token){
         Cookie cookie = new Cookie(cookieName, token);

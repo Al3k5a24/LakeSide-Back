@@ -48,8 +48,8 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		if (password == null || password.trim().isEmpty()) {
 			throw new IllegalArgumentException("Password cannot be empty");
 		}
-		if (password.length() < 6) {
-			throw new IllegalArgumentException("Password must be at least 6 characters long");
+		if (password.length() < 8) {
+			throw new IllegalArgumentException("Password must be at least 8 characters long");
 		}
 		if (!pattern.matcher(email.trim()).matches()) {
 			throw new IllegalArgumentException("Invalid email format");
@@ -99,7 +99,7 @@ public class IUserAccountServiceImpl implements IUserAccountService{
         claim.put("role", potentialUser.getRole().name());
         claim.put("fullName", potentialUser.getFullName());
 
-		String jwtToken = jwtService.generateToken(claim,potentialUser);
+		String jwtToken = jwtService.generateAccessToken(claim,potentialUser);
 		potentialUser.setToken(jwtToken);
         userRepository.save(potentialUser);
         return potentialUser;
