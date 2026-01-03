@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import com.LakeSide.LakeSide.model.RefreshToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,8 +35,9 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 	
 	@Autowired
 	private JWTService jwtService;
-	
-	private AuthenticationManager authManager;
+
+    @Autowired
+	private RefreshToken refreshTokenRepository;
 	
 	@Override
 	public userAccountResponse createAccount(String fullName, String email, String password) {
