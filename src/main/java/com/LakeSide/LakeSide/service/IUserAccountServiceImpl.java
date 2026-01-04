@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import com.LakeSide.LakeSide.Exception.InvalidTokenException;
 import com.LakeSide.LakeSide.model.RefreshToken;
 import com.LakeSide.LakeSide.repository.RefreshTokenRepository;
+import com.LakeSide.LakeSide.response.TokenRefreshResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -109,7 +110,6 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 
         refreshTokenRepository.save(refreshToken);
 
-
         //add role and full name as claim to payload
         Map<String, Object> claim = new HashMap();
         claim.put("role", potentialUser.getRole().name());
@@ -132,37 +132,45 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		return user;
 	}
 
-    public String refreshAccessToken(String refreshToken) throws InvalidTokenException {
-        if(!jwtService.validateRefreshToken(refreshToken)){
+    public TokenRefreshResponse refreshAccessToken(String refreshTokenString) throws InvalidTokenException {
+        if(!jwtService.validateRefreshToken(refreshTokenString)){
             throw new InvalidTokenException("Invalid refresh token");
         }
 
-        if(!"refresh".equals(jwtService.extractTokenType(refreshToken))){
+        if(!"refresh".equals(jwtService.extractTokenType(refreshTokenString))){
             throw new InvalidTokenException("Token is not refresh token");
         }
 
-        if(refreshToken.i)
+        Optional<RefreshToken> storedTokenOpt = refreshTokenRepository.findByToken(refreshTokenString);
 
-        Optional<RefreshToken> storedToken = refreshTokenRepository.findByToken(refreshToken);
-        String email = jwtService.extractEmail(refreshToken);
+        if(storedTokenOpt.isEmpty()){
+            throw new InvalidTokenException("Refresh token has not been found");
+        }
+
+        RefreshToken storedToken = storedTokenOpt.get();
+
+        if(!storedToken.isRevoked()){
+            throw new InvalidTokenException("Refresh token is revoked");
+        }
+
+        String email = jwtService.extractEmail(refreshTokenString);
         UserAccount user = loadUserbyEmail(email);
+
+        refreshTokenRepository.revokeToken(refreshTokenString);
 
         Map<String, Object> claim = new HashMap();
         claim.put("role", user.getRole().name());
         claim.put("fullName", user.getFullName());
+        String newAccessToken = jwtService.generateAccessToken(claim,user);
 
-        String jwtToken = jwtService.generateAccessToken(claim,user);
-
-        String RtokenString = jwtService.generateRefreshToken(user.getEmail());
-
+        String newRefreshtokenString = jwtService.generateRefreshToken(user.getEmail());
         RefreshToken newRefreshToken = new RefreshToken(
                 user,
                 LocalDateTime.now().plusDays(7),
                 user.getEmail(),
-                RtokenString);
-
+                newRefreshtokenString);
         refreshTokenRepository.save(newRefreshToken);
 
-        return jwtToken;
+        return new TokenRefreshResponse(newAccessToken, newRefreshtokenString);
     }
 }
