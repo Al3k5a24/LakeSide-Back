@@ -72,24 +72,6 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		user.setRole(Role.USER);
         UserAccount savedUser = userRepository.save(user);
 
-        String RtokenString = jwtService.generateRefreshToken(user.getEmail());
-
-        RefreshToken refreshToken = new RefreshToken(
-                user,
-                LocalDateTime.now().plusDays(7),
-                user.getEmail(),
-                RtokenString);
-
-        refreshTokenRepository.save(refreshToken);
-
-        //add role and full name as claim to payload
-        Map<String, Object> claim = new HashMap();
-        claim.put("role", user.getRole().name());
-        claim.put("fullName", user.getFullName());
-
-        String jwtToken = jwtService.generateAccessToken(claim,user);
-        user.setToken(jwtToken);
-
 		return new userAccountResponse(
 				savedUser.getId(),
 				savedUser.getFullName(),
@@ -117,6 +99,25 @@ public class IUserAccountServiceImpl implements IUserAccountService{
             throw new InvalidPasswordException("Password is incorrect, try again");
         }
 
+        String RtokenString = jwtService.generateRefreshToken(potentialUser.getEmail());
+
+        RefreshToken refreshToken = new RefreshToken(
+                potentialUser,
+                LocalDateTime.now().plusDays(7),
+                potentialUser.getEmail(),
+                RtokenString);
+
+        refreshTokenRepository.save(refreshToken);
+
+
+        //add role and full name as claim to payload
+        Map<String, Object> claim = new HashMap();
+        claim.put("role", potentialUser.getRole().name());
+        claim.put("fullName", potentialUser.getFullName());
+
+        String jwtToken = jwtService.generateAccessToken(claim,potentialUser);
+        potentialUser.setToken(jwtToken);
+
         userRepository.save(potentialUser);
         return potentialUser;
 	}
@@ -132,13 +133,15 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 	}
 
     public String refreshAccessToken(String refreshToken) throws InvalidTokenException {
-        if(jwtService.validateRefreshToken(refreshToken)){
+        if(!jwtService.validateRefreshToken(refreshToken)){
             throw new InvalidTokenException("Invalid refresh token");
         }
 
         if(!"refresh".equals(jwtService.extractTokenType(refreshToken))){
             throw new InvalidTokenException("Token is not refresh token");
         }
+
+        if(refreshToken.i)
 
         Optional<RefreshToken> storedToken = refreshTokenRepository.findByToken(refreshToken);
         String email = jwtService.extractEmail(refreshToken);
