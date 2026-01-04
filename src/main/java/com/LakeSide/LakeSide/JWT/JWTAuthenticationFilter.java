@@ -47,7 +47,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
 			
 			// First, try to get token from Authorization header
 			if(authHeader != null && authHeader.startsWith("Bearer ")) {
-				//start from position 7 because Bearer with 1 space has 7 positions(letters)
+
+                //start from position 7 because Bearer with 1 space has 7 positions(letters)
 				jwt = authHeader.substring(7);
 			} else {
 				// If no Authorization header, try to get token from cookie
@@ -67,7 +68,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
 				filterChain.doFilter(request, response);
 				return;
 			}
-			
+
 			userEmail = jwtService.extractEmail(jwt);
 			
 			//check if userEmail is not null and the user has not been authenticated already(not connected)
@@ -75,7 +76,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
 				UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 				
 				//check if userDetails exists and token is valid
-				if(userDetails != null && jwtService.isTokenValid(jwt, userDetails)) {
+				if(userDetails != null &&
+                        jwtService.isTokenValid(jwt, userDetails) &&
+                        "access".equals(jwtService.extractTokenType(jwt))) {
 					UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
 							userDetails, null, userDetails.getAuthorities());
 					//use info from request to create token

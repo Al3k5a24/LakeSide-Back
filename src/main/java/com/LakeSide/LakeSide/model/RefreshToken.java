@@ -18,13 +18,18 @@ public class RefreshToken {
     @Column(nullable = false)
     private String email;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserAccount user;
+
     @Column(nullable = false)
     private LocalDateTime expiryDate;
 
     @Column(nullable = false)
     private boolean rekoved = false;
 
-    public RefreshToken( LocalDateTime expiryDate, String email, String token) {
+    public RefreshToken(UserAccount user, LocalDateTime expiryDate, String email, String token) {
+        this.user=user;
         this.expiryDate = expiryDate;
         this.email = email;
         this.token = token;
@@ -60,6 +65,14 @@ public class RefreshToken {
 
     public void setExpiryDate(LocalDateTime expiryDate) {
         this.expiryDate = expiryDate;
+    }
+
+    public UserAccount getUser() {
+        return user;
+    }
+
+    public void setUser(UserAccount user) {
+        this.user = user;
     }
 
     public boolean isRekoved() {

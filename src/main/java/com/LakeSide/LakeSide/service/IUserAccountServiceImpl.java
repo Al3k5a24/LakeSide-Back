@@ -69,17 +69,17 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 		user.setEmail(email.trim().toLowerCase());
 		user.setPassword(passwordEncoder.encode(password));
 		user.setRole(Role.USER);
+        UserAccount savedUser = userRepository.save(user);
 
         String RtokenString = jwtService.generateRefreshToken(user.getEmail());
 
         RefreshToken refreshToken = new RefreshToken(
+                user,
                 LocalDateTime.now().plusDays(7),
-                RtokenString,
-                user.getEmail());
+                user.getEmail(),
+                RtokenString);
 
         refreshTokenRepository.save(refreshToken);
-
-		UserAccount savedUser = userRepository.save(user);
 
 		return new userAccountResponse(
 				savedUser.getId(),
