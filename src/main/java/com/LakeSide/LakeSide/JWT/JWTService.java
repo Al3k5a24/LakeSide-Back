@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +44,8 @@ public class JWTService {
 	}
 
     private int cookieExpiration = 604800;
-    private String cookieName = "AUTH_TOKEN";
+    private String accessTokenCookieName = "ACCESS_TOKEN";
+    private String refreshTokenCookieName = "REFRESH_TOKEN";
 	
 	//basic jwt token, just for user creation
 	public String generateAccessToken(UserDetails userDetails) {
@@ -80,8 +82,8 @@ public class JWTService {
     }
 
 
-    public void generateCookie(HttpServletResponse response, String token){
-        Cookie cookie = new Cookie(cookieName, token);
+    public void generateAccessTokenCookie(HttpServletResponse response, String token){
+        Cookie cookie = new Cookie(accessTokenCookieName, token);
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // false za localhost development (HTTP), true za production (HTTPS)
         cookie.setPath("/");
@@ -90,10 +92,44 @@ public class JWTService {
         response.addCookie(cookie);
     }
 
+    public void generateRefreshTokenCookie(HttpServletResponse response, String token) {
+        Cookie cookie = new Cookie(refreshTokenCookieName, token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(cookieExpiration);
+        cookie.setAttribute("SameSite", "Strict"); // Strict za refresh token
+        response.addCookie(cookie);
+    }
+
+    public void deleteCookie(HttpServletResponse response, String cookieName) {
+        Cookie cookie = new Cookie(cookieName, null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        response.addCookie(cookie);
+    }
+
 	public Boolean isTokenValid(String token, UserDetails userDetails) {
 		final String email = extractEmail(token);
 		return (email != null && email.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            extractAllClaims(token);
+            isTokenExpired(token);
+            String tokenType = extractTokenType(token);
+
+            if(!"refresh".equals(tokenType) || isTokenExpired(token)){
+                return false;
+            }
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
 
 	private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());

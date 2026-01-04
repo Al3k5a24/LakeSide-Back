@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import com.LakeSide.LakeSide.Exception.InvalidTokenException;
 import com.LakeSide.LakeSide.model.RefreshToken;
 import com.LakeSide.LakeSide.repository.RefreshTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,14 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 
         refreshTokenRepository.save(refreshToken);
 
+        //add role and full name as claim to payload
+        Map<String, Object> claim = new HashMap();
+        claim.put("role", user.getRole().name());
+        claim.put("fullName", user.getFullName());
+
+        String jwtToken = jwtService.generateAccessToken(claim,user);
+        user.setToken(jwtToken);
+
 		return new userAccountResponse(
 				savedUser.getId(),
 				savedUser.getFullName(),
@@ -108,13 +117,6 @@ public class IUserAccountServiceImpl implements IUserAccountService{
             throw new InvalidPasswordException("Password is incorrect, try again");
         }
 
-        //add role and full name as claim to payload
-        Map<String, Object> claim = new HashMap();
-        claim.put("role", potentialUser.getRole().name());
-        claim.put("fullName", potentialUser.getFullName());
-
-		String jwtToken = jwtService.generateAccessToken(claim,potentialUser);
-		potentialUser.setToken(jwtToken);
         userRepository.save(potentialUser);
         return potentialUser;
 	}
@@ -128,4 +130,36 @@ public class IUserAccountServiceImpl implements IUserAccountService{
 				.orElseThrow(() -> new UserAccountNotFoundException("Account has not been found!"));
 		return user;
 	}
+
+    public String refreshAccessToken(String refreshToken) throws InvalidTokenException {
+        if(jwtService.validateRefreshToken(refreshToken)){
+            throw new InvalidTokenException("Invalid refresh token");
+        }
+
+        if(!"refresh".equals(jwtService.extractTokenType(refreshToken))){
+            throw new InvalidTokenException("Token is not refresh token");
+        }
+
+        Optional<RefreshToken> storedToken = refreshTokenRepository.findByToken(refreshToken);
+        String email = jwtService.extractEmail(refreshToken);
+        UserAccount user = loadUserbyEmail(email);
+
+        Map<String, Object> claim = new HashMap();
+        claim.put("role", user.getRole().name());
+        claim.put("fullName", user.getFullName());
+
+        String jwtToken = jwtService.generateAccessToken(claim,user);
+
+        String RtokenString = jwtService.generateRefreshToken(user.getEmail());
+
+        RefreshToken newRefreshToken = new RefreshToken(
+                user,
+                LocalDateTime.now().plusDays(7),
+                user.getEmail(),
+                RtokenString);
+
+        refreshTokenRepository.save(newRefreshToken);
+
+        return jwtToken;
+    }
 }

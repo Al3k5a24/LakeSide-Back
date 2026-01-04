@@ -5,20 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.LakeSide.LakeSide.model.UserAccount;
 import com.LakeSide.LakeSide.response.userAccountLogInResponse;
 import com.LakeSide.LakeSide.response.userAccountResponse;
 import com.LakeSide.LakeSide.service.IUserAccountService;
 
-import com.LakeSide.LakeSide.Configuration.AppConfig;
 import com.LakeSide.LakeSide.JWT.JWTService;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -60,7 +53,7 @@ public class UserAccountController {
 		try {
 			// Token and logged in status are already set by the service
 			userAccountLogInResponse userResponse = getUserLoginResponse(user);
-			jwtService.generateCookie(response,userResponse.getToken());
+			jwtService.generateAccessTokenCookie(response,userResponse.getToken());
 			return ResponseEntity.ok(userResponse);
 		} catch (Exception e) {
 			return ResponseEntity.status(401).body("Authentication failed: " + e.getMessage());

@@ -26,7 +26,7 @@ public class RefreshToken {
     private LocalDateTime expiryDate;
 
     @Column(nullable = false)
-    private boolean rekoved = false;
+    private boolean revoked = false;
 
     public RefreshToken(UserAccount user, LocalDateTime expiryDate, String email, String token) {
         this.user=user;
@@ -75,11 +75,11 @@ public class RefreshToken {
         this.user = user;
     }
 
-    public boolean isRekoved() {
-        return rekoved;
+    public boolean isRevoked() {
+        return revoked;
     }
 
-    public void setRekoved(boolean rekoved) {
-        this.rekoved = rekoved;
+    public void setRevoked(boolean revoked) {
+        this.revoked = revoked;
     }
 }
