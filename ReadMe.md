@@ -433,14 +433,3 @@ Credentials (cookies) are enabled for cross-origin requests. To add additional o
 This project is open-source and available under the MIT License.
 
 ---
-
-## Notes
-
-- **Database Schema**: The application uses JPA's `ddl-auto=update` mode, which automatically creates/updates database tables. For production, consider using `validate` or manual schema management.
-- **Password Security**: Always use strong passwords in production. Consider implementing password strength requirements and password reset functionality.
-- **JWT Secret Key**: Never commit your production JWT secret key to version control. Use environment variables or secure configuration management.
-- **HTTPS in Production**: Always use HTTPS in production environments and set `Secure=true` for cookies to prevent man-in-the-middle attacks.
-- **Rate Limiting**: Consider implementing rate limiting for authentication endpoints to prevent brute-force attacks.
-- **Logging**: Review and configure logging levels appropriately for production to avoid exposing sensitive information.
-- **Error Messages**: Customize error messages to avoid leaking system information while maintaining useful debugging information.
-- **Photo Storage**: For production, consider using cloud storage (AWS S3, Google Cloud Storage) instead of database BLOBs for better performance and scalability.
